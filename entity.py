@@ -5,4 +5,5 @@ class Entity(physicsObject):
         self.color = color
     
     def render(self,screen):
+        #Renders the entity on the screen
         pygame.draw.rect(screen,self.color,self.rect)
