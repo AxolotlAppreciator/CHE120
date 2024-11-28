@@ -3,7 +3,7 @@
 --> FIreboy and watergirl style game? <--
 
 TODO: most things
-- [ ] player movement
 - [ ] object collision
 - [ ] movement
 - [ ] more hehe
+- [ ] FIX THE BUTTON
