@@ -13,7 +13,7 @@ class physicsObject:
         self.acceleration += force/self.mass
     
     def updateObject(self, delta_time):
-        self.velocity += self.acceleration * delta_time
+        self.velocity.y += self.acceleration.y * delta_time
         self.rect.x += self.velocity.x * delta_time
         self.rect.y += self.velocity.y * delta_time
         self.acceleration = pygame.Vector2(0,0)
@@ -40,5 +40,4 @@ class physicsObject:
             elif self.velocity.x < 0:
                 self.rect.left = other.rect.right
                 self.velocity.x = 0            
-        
         
