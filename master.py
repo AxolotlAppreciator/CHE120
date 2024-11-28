@@ -1,6 +1,6 @@
 import pygame
 import time
-#This is where main stuff will go (game process). Frfr. Frfr.
+#This is where main stuff will go (game process). Frfr. Frfr. Crazy.
 pygame.init()
 screen = pygame.display.set_mode((800,600))
 clock = pygame.time.Clock()
