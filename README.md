@@ -3,6 +3,7 @@
 --> Doodle Jump style game? <--
 
 TODO: most things
+
 Seb:
 - [ ] Movement
 - [ ] Enemies
