@@ -2,6 +2,7 @@ import pygame
 from physics import physicsObject
 
 class Entity(physicsObject):
+    #Initializes an entity at (x,y) with a specified rectangular hitbox of width, height, a maximum movement speed of max_speed, and a deceleration rate (friction). Sprite path defaults to none. 
     def __init__(self, x, y, width, height, max_speed, deceleration_rate, spritePath=None):
         super().__init__(x, y, width, height)
         self.deceleration_rate = deceleration_rate
@@ -19,17 +20,18 @@ class Entity(physicsObject):
         # Apply gravity
         self.velocity += self.acceleration
 
-        # Update horizontal position
+        # If the entity is accelerating, it increases the speed based on that acceleration rate. If not, it slows down based on the deceleration rate.
         if self.accelerating:
             if abs(self.velocity.x) < self.max_speed:
                 self.velocity.x += self.direction * 10
         else:
             self.velocity.x *= self.deceleration_rate
-            
+        
+        #Updates horizontal position and checks for valid collision (x)
         self.rect.x += self.velocity.x * delta_time
         self.handle_collisions(objects, axis="x")
 
-        # Update vertical position
+        # Update vertical position and checks for valid collision (y)
         self.rect.y += self.velocity.y * delta_time
         self.handle_collisions(objects, axis="y")
 
@@ -38,6 +40,8 @@ class Entity(physicsObject):
             self.rect.clamp_ip(screen_rect)
 
     def handle_collisions(self, objects, axis):
+        #Checks for collisions in the X axis and Y axis seperately (could be done better) between self and all objects. 
+
         self.grounded = False  # Reset grounded status for vertical checks
         for obj in objects:
             if self.rect.colliderect(obj):
@@ -61,6 +65,8 @@ class Entity(physicsObject):
                         if overlap > 0:
                             self.rect.top += overlap  # Correct upward overlap
                         self.velocity.y = 0  # Stop upward velocity
+
+        
     def render(self, screen):
         """Render the entity to the screen"""
         if self.sprite:

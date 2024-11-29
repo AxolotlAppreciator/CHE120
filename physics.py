@@ -1,8 +1,10 @@
 import pygame
 import time
 class physicsObject:
+
+#not really used much, entity.py uses functions in here.
     def __init__(self,x,y,width,height,mass=1):
-        #Initializes a new physics object's position, dimensions and mass. 
+        #Initializes a new physics object's position, dimensions and mass (mass is not really used at all atm)
         self.rect = pygame.Rect(x,y,width,height)
         self.mass = mass
         self.velocity = pygame.Vector2(0,0)

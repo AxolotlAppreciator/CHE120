@@ -1,5 +1,6 @@
 import pygame
 class object(pygame.Rect):
+    # Initializes an unmovable object at position (x,y) with dimensions and colors
     def __init__(self, x, y, width, height, color=(255,0,0), sprite=None):
         super().__init__(x, y, width, height)
         self.color = color

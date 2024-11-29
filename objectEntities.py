@@ -1,7 +1,11 @@
 import pygame
 import static_object
 
+#Location containing all objects with non-standard behaviours
+
 class button(pygame.Rect):
+    # creates a button at (x,y) with specified width and height. Default color is white, sprite defaults to None. 
+    # ***100% a WIP, does not work lol
     def __init__(self, x, y, width, height, color=(255, 255, 255), sprite=None):
         super().__init__(x, y, width, height)  # Initialize as a pygame.Rect
         self.originalY = y  # Save the original Y position
@@ -10,7 +14,7 @@ class button(pygame.Rect):
         self.active = False
 
     def handle_entity_collision(self, entity):
-        """Handle interaction with an entity and update the button state."""
+
         if self.colliderect(entity.rect):  # Check collision with the entity's rectangle
             if (
                 entity.velocity.y >= 0  # The entity is falling or stationary
@@ -26,7 +30,7 @@ class button(pygame.Rect):
 
 
     def render(self, screen):
-        """Render the button to the screen."""
+        #renders button on screen
         if self.sprite:
             screen.blit(self.sprite, (self.x, self.y))  # Render the sprite if available
         else:
