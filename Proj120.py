@@ -30,7 +30,10 @@ class moving_entity():
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
         else:
             pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
-            
+
+
+
+
 # platform class
 class platform():
     def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None):
@@ -94,14 +97,26 @@ class platform():
 def generate_platforms(objects, num_platforms, screen_width, screen_height):
     platform_width = 100
     platform_height = 20
+
+    # the probabilities for each platform type
+    platform_types = ["regular", 'breaking', 'moving']
+    probabilities = [0.7, 0.2, 0.1]
+
+    previous_y = screen_height - platform_height
+    vertical_gap = 100
+    
     for _ in range(num_platforms):
         x = random.randint(0, screen_width - platform_width)
-        y = random.randint(0, screen_height - platform_height)
+        y = previous_y - vertical_gap
 
-        platform_type = random.choice(["regular", "breaking", "moving"])
+        if y < 0:
+            y = 0
+
+        platform_type = random.choices(platform_types, probabilities)[0]
         speed = random.randint(1, 3) if platform_type == "moving" else 0
-        new_platform = Platform(x, y, platform_width, platform_height, platform_type, speed=speed)
+        new_platform = platform(x, y, platform_width, platform_height, platform_type, speed=speed)
         objects.append(new_platform)
+        previous_y = y
 
 def main():
     #-----------------------------Setup------------------------------------------------------#
