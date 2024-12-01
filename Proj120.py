@@ -49,6 +49,7 @@ class platform():
             self.sprite = pygame.transform.scale(self.sprite, (width, height))
 
     def get_platform_colour(self):
+        # this could be made into a switch case
         if self.type == "regular":
             return (0, 255, 0)  # Green for regular
         elif self.type == "breaking":
@@ -118,6 +119,9 @@ def generate_platforms(objects, num_platforms, screen_width, screen_height):
         objects.append(new_platform)
         previous_y = y
 
+    def platform_generation_collision():
+        pass
+
 def main():
     #-----------------------------Setup------------------------------------------------------#
     """ Set up the game and run the main game loop """
@@ -131,7 +135,6 @@ def main():
     
 #     add if it falls behind it get fucked!! and lose
     #-----------------------------Program Variable Initialization----------------------------#
-
 
 
     player = moving_entity(300,300,100,150,200,0.85,"images\player.png")
