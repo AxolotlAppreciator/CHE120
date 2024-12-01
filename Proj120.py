@@ -54,7 +54,7 @@ class platform():
         self.active = True # breaking platforms will deactivate after breaking
         
         if spritePath:
-            self.sprite = pygame.image.load(player.png).convert_alpha()
+            self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite, (width, height))
 
     def get_platform_colour(self):
