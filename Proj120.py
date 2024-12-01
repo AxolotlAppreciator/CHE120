@@ -10,7 +10,7 @@ class moving_entity():
         self.acceleration = pygame.Vector2(0,0)
         self.deceleration_rate = deceleration_rate
         self.sprite = None
-        self.grounded = False
+        self.grounded = True
         self.accelerating = False
         self.direction = 0
         self.max_speed = max_speed
@@ -22,7 +22,7 @@ class moving_entity():
 class platform():
     def __init__(self,x,y,width,height,spritePath = None):
         self.rect = pygame.Rect(x,y,width,height)
-
+        self.velocity = pygame.Vector2(0,0)
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite, (width, height))
@@ -46,7 +46,7 @@ def main():
 
 
 
-    player = moving_entity(300,300,50,150,200,0.85)
+    player = moving_entity(300,300,100,150,200,0.85,"images\player.png")
 
     #List of all active objects on the screen
     objects = []
@@ -62,16 +62,17 @@ def main():
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
         delta_time = clock.get_time() / 1000 # Time since last frame
-
         #-----------------------------Event Handling-----------------------------------------#
         ev = pygame.event.poll()    # Look for any event
         if ev.type == pygame.QUIT:  # Window close button clicked?
             break
         
-        checkPlayerInput(player,delta_time, 200,player.rect,objects)
-        handle_collisions(player,objects,'x')
-        handle_collisions(player,objects,'y')
-        updateEntity(player,delta_time,objects)
+        print(player.velocity.y)
+        checkPlayerInput(player, delta_time, 200, objects)
+        player.rect.y = 300
+        updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
+        updateObjects(player, delta_time, objects)           # Update X-axis movement
+        handle_collisions(player, objects)      
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
 
@@ -88,19 +89,10 @@ def main():
         render(player,mainSurface)
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
-        print(delta_time)
-        for a in objects:
-            render(a,mainSurface)
-        for b in activeEntities:
-            render(b,mainSurface)
-            updateEntity(b,delta_time,objects)  
-            handle_collisions(b,objects,'x')
-            handle_collisions(b,objects,'y') 
-        
-        if gamestate == 1:
-            pass
-        
-        # Now the surface is ready, tell pygame to display it!
+        mainSurface.fill((53, 80, 112))  # Clear the screen
+        render(player, mainSurface)
+        for obj in objects:
+            render(obj, mainSurface)
         pygame.display.flip()
         clock.tick(60)
 
@@ -113,85 +105,68 @@ def render(object, screen):
     else:
         pygame.draw.rect(screen, (255, 0, 0), object.rect)  # Placeholder red rectangle
 
-def handle_collisions(self, objects, axis):
-        #Checks for collisions in the X axis and Y axis seperately (could be done better) between self and all objects. 
+def handle_collisions(self, objects):
+    for obj in objects:
+        if self.rect.colliderect(obj.rect):
+            # Horizontal adjustment
+            #if self.rect.right > obj.rect.left and self.rect.left < obj.rect.left:
+            #    self.rect.right = obj.rect.left  # Push out from the left
+            #elif self.rect.left < obj.rect.right and self.rect.right > obj.rect.right:
+            #    self.rect.left = obj.rect.right  # Push out from the right
 
-        self.grounded = False  # Reset grounded status for vertical checks
-        for obj in objects:
-            if self.rect.colliderect(obj):
-                if axis == "x":
-                # Horizontal collision
-                    if self.velocity.x > 0:  # Moving right
-                       self.rect.right = obj.left
-                    elif self.velocity.x < 0:  # Moving left
-                        self.rect.left = obj.rect.right
-                    self.velocity.x = 0  # Stop horizontal velocity
-                elif axis == "y":
-                # Vertical collision
-                    if self.velocity.y > 0:  # Moving down
-                        overlap = self.rect.bottom - obj.rect.top
-                        if overlap > 0:
-                            self.rect.bottom -= overlap  # Correct sinking into the platform
-                        self.velocity.y = 0  # Stop downward velocity
-                        self.grounded = True  # Entity is on the ground
-                    elif self.velocity.y < 0:  # Moving up
-                        overlap = obj.bottom - self.rect.top
-                        if overlap > 0:
-                            self.rect.top += overlap  # Correct upward overlap
-                        self.velocity.y = 0  # Stop upward velocity
+        # Vertical adjustment
+            if self.rect.bottom > obj.rect.top and self.rect.top < obj.rect.top:
+                obj.rect.top = self.rect.bottom  # Push out from the top
+                self.grounded = True
+            elif self.rect.top < obj.rect.bottom and self.rect.bottom > obj.rect.bottom:
+                obj.rect.bottom = self.rect.top  # Push out from the bottom
+                
+
+
 
 def checkPlayerInput(player, delta_time, player_speed, objects):
-        keys = pygame.key.get_pressed()
-        # Jump logic
-        if (keys[pygame.K_UP] or keys[pygame.K_w]) and player.grounded:  # Arrow up or W
-            #sets vertical velocity to 500 (can be changed, temporary)
-            player.velocity.y = -15/delta_time
-            print("jump")
-            player.grounded = False
-
-        # Horizontal movement logic
-
-        # If a key is pressed, enables acceleration and sets the direction based on key pressed. 
-
-        if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and (keys[pygame.K_RIGHT] or keys[pygame.K_d]):
-            player.accelerating = False
-            
-
-        elif keys[pygame.K_LEFT] or keys[pygame.K_a]:  # Arrow left or A
-            player.direction = -1
-            player.accelerating = True
-            print("left")
-            #moving left
-
-        elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:  # Arrow right or D
-            player.direction = 1
-            player.accelerating = True
-            print("right")
-            #moving right
-
-        else:
-            # Stop accelerating if neither left nor right is pressed
-            player.accelerating = False
+    keys = pygame.key.get_pressed()
+    
+    # Jump logic
+    if (keys[pygame.K_UP] or keys[pygame.K_w]) and player.grounded:
+        player.velocity.y = -500  # Adjust jump strength
+        player.grounded = False  # Set player as airborne
+    if not player.grounded:
+        player.velocity.y += 500 * delta_time
+    # Horizontal movement logic
+    if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+        player.direction = -1
+        player.accelerating = True
+    elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+        player.direction = 1
+        player.accelerating = True
+    else:
+        player.accelerating = False
 
                         
 
-def updateEntity(self, delta_time, objects):
-        # Apply gravity
-        self.velocity.y += 25
-
-        # If the entity is accelerating, it increases the speed based on that acceleration rate. If not, it slows down based on the deceleration rate.
-        if self.accelerating:
-            if abs(self.velocity.x) < self.max_speed:
-                self.velocity.x += self.direction * 15
-        else:
-            self.velocity.x *= self.deceleration_rate
+def updateObjects(self, delta_time, objects):
+    if self.accelerating:
+        if abs(self.velocity.x) < self.max_speed:
+            self.velocity.x += self.direction * 15
+    else:
+        self.velocity.x *= self.deceleration_rate
         
         #Updates horizontal position and checks for valid collision (x)
-        self.rect.x += self.velocity.x * delta_time
-        handle_collisions(self,objects, axis="x")
+    self.rect.x += self.velocity.x * delta_time
+    handle_collisions(self,objects)
 
-        # Update vertical position and checks for valid collision (y)
-        self.rect.y += self.velocity.y * delta_time
-        handle_collisions(self,objects, axis="y")
+def updateY(self, delta_time, objects, entities):
+    # Apply gravity
+
+    # If not grounded, move objects based on the player's velocity
+
+    vertical_offset = self.velocity.y * delta_time
+    for obj in objects:
+        obj.rect.y -= vertical_offset
+    for entity in entities:
+        entity.rect.y -= vertical_offset
+
+
 
 main()
