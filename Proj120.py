@@ -162,7 +162,7 @@ def main():
         print(player.velocity.y)
         checkPlayerInput(player, delta_time, 200, objects)
         for obj in objects:
-            if player.rect.y > obj.rect.y + 30:
+            if player.rect.y > obj.rect.y + 60:
                 player.rect.y += 500 * delta_time
             else:
                 player.rect.y = 300
@@ -226,10 +226,10 @@ def checkPlayerInput(player, delta_time, player_speed, objects):
     
     # Jump logic
     if (keys[pygame.K_UP] or keys[pygame.K_w]) and player.grounded:
-        player.velocity.y = -500  # Adjust jump strength
+        player.velocity.y = -800  # Adjust jump strength
         player.grounded = False  # Set player as airborne
     if not player.grounded:
-        player.velocity.y += 500 * delta_time
+        player.velocity.y += 1300 * delta_time
         
     # Horizontal movement logic
     if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -251,7 +251,11 @@ def updateObjects(self, delta_time, objects):
             self.velocity.x += self.direction * 15
     else:
         self.velocity.x *= self.deceleration_rate
-        
+    
+    if self.rect.x < -70:
+        self.rect.x = 550
+    elif self.rect.x > 560:
+        self.rect.x = -60
         #Updates horizontal position and checks for valid collision (x)
     self.rect.x += self.velocity.x * delta_time
     handle_collisions(self,objects)
