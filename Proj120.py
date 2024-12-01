@@ -158,7 +158,12 @@ def main():
         
         print(player.velocity.y)
         checkPlayerInput(player, delta_time, 200, objects)
-        player.rect.y = 300
+        for obj in objects:
+            if player.rect.y > obj.rect.y + 30:
+                player.rect.y += 500 * delta_time
+            else:
+                player.rect.y = 300
+
         updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
         updateObjects(player, delta_time, objects)           # Update X-axis movement
         handle_collisions(player, objects)      
@@ -247,6 +252,7 @@ def updateObjects(self, delta_time, objects):
         #Updates horizontal position and checks for valid collision (x)
     self.rect.x += self.velocity.x * delta_time
     handle_collisions(self,objects)
+
 
 def updateY(self, delta_time, objects, entities):
     # Apply gravity
