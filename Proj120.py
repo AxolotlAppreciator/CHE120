@@ -22,21 +22,6 @@ class moving_entity():
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite, (width+30, height))
     
-class platform():
-    def __init__(self,x,y,width,height,spritePath = None):
-        self.rect = pygame.Rect(x,y,width,height)
-        self.velocity = pygame.Vector2(0,0)
-        if spritePath:
-            self.sprite = pygame.image.load(spritePath).convert_alpha()
-            self.sprite = pygame.transform.scale(self.sprite, (width, height))
-        else:
-            self.sprite = None
-        
-        # If there's a sprite path, load the sprite for animation
-        if spritePath:
-            self.sprite = pygame.image.load(spritePath).convert_alpha()
-            self.sprite = pygame.transform.scale(self.sprite, (width, height))
-
     def render(self, screen):
         if self.sprite:
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
@@ -172,13 +157,13 @@ def main():
         
 
         # Rendering and updating objects and entities ->
-        render(player,mainSurface)
+        player.render(mainSurface)
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
         mainSurface.fill((53, 80, 112))  # Clear the screen
-        render(player, mainSurface)
+        player.render(mainSurface)
         for obj in objects:
-            render(obj, mainSurface)
+            obj.render(mainSurface)
         pygame.display.flip()
         clock.tick(60)
 
