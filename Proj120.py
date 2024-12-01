@@ -17,11 +17,10 @@ class moving_entity():
         self.accelerating = False
         self.direction = 0
         self.max_speed = max_speed
-<<<<<<< HEAD
         # If there's a sprite path, load the sprite
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
-            self.sprite = pygame.transform.scale(self.sprite, (width, height))
+            self.sprite = pygame.transform.scale(self.sprite, (width+30, height))
     
 class platform():
     def __init__(self,x,y,width,height,spritePath = None):
@@ -32,15 +31,10 @@ class platform():
             self.sprite = pygame.transform.scale(self.sprite, (width, height))
         else:
             self.sprite = None
-=======
-        self.sprite_frames = [] # list for sprite frames
-        self.animation_timer = 0
-        self.current_frame = 0
->>>>>>> 2c7486b6c4ccaaf5764059c977bec1c00b3e73d1
         
         # If there's a sprite path, load the sprite for animation
         if spritePath:
-            self.sprite = pygame.image.load(player.png).convert_alpha()
+            self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite, (width, height))
 
     def render(self, screen):
@@ -98,7 +92,7 @@ class platform():
         else:     
             pygame.draw.rect(screen, colour, self.rect)
     
-    def respawn(self, screen_width, screen_heigh):
+    def respawn(self, screen_width, screen_height):
         if self.rect.top > screen_height:
             self.rect.x = random.randint(0, screen_width - self.rect.width)
             self.rect.y = random.randint(-100, -20)
@@ -138,6 +132,7 @@ def main():
 
 
     player = moving_entity(300,300,100,150,200,0.85,"images\player.png")
+    player.velocity.y = 497
 
     #List of all active objects on the screen
     objects = []
@@ -189,7 +184,6 @@ def main():
 
     pygame.quit()     # Once we leave the loop, close the window.
 
-<<<<<<< HEAD
 
 def render(object, screen):
     if object.sprite:
@@ -214,10 +208,6 @@ def handle_collisions(self, objects):
                 obj.rect.bottom = self.rect.top  # Push out from the bottom
                 
 
-=======
-def handle_collisions(self, objects, axis):
-        #Checks for collisions in the X axis and Y axis seperately (could be done better) between self and all objects. 
->>>>>>> 2c7486b6c4ccaaf5764059c977bec1c00b3e73d1
 
 
 def checkPlayerInput(player, delta_time, player_speed, objects):
