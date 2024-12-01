@@ -10,8 +10,8 @@ Seb:
 
 Ivy:
 - [ ] Graphics
-- [ ] Platforms
-- [ ] Animation
+- [ ] Platforms (change the platform probability? prolly 70 20 10?)
+- [ ] Animation 
 
 Yana:
 - [ ] Sound
