@@ -21,6 +21,9 @@ class moving_entity():
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite, (width+30, height))
+
+        # Create a flipped version of the sprite for facing left
+        self.sprite_left = pygame.transform.flip(self.sprite, True, False)  # Flip horizontally
     
     def render(self, screen):
         if self.sprite:
@@ -204,13 +207,16 @@ def checkPlayerInput(player, delta_time, player_speed, objects):
         player.grounded = False  # Set player as airborne
     if not player.grounded:
         player.velocity.y += 500 * delta_time
+        
     # Horizontal movement logic
     if keys[pygame.K_LEFT] or keys[pygame.K_a]:
         player.direction = -1
         player.accelerating = True
+        player.sprite = player.sprite_left  # Flip sprite to the left
     elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
         player.direction = 1
         player.accelerating = True
+        player.sprite = pygame.transform.flip(player.sprite_left, True, False)  # Flip sprite back to the right
     else:
         player.accelerating = False
 
