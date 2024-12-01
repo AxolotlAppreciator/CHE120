@@ -2,6 +2,9 @@
 import pygame
 import random
 import time
+
+pygame.display.set_caption("Chill Jump")
+
 #Instantiate a new player entity
 class moving_entity():     
     def __init__(self,x, y, width, height, max_speed, deceleration_rate, spritePath=None):
@@ -14,6 +17,7 @@ class moving_entity():
         self.accelerating = False
         self.direction = 0
         self.max_speed = max_speed
+<<<<<<< HEAD
         # If there's a sprite path, load the sprite
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
@@ -28,7 +32,94 @@ class platform():
             self.sprite = pygame.transform.scale(self.sprite, (width, height))
         else:
             self.sprite = None
+=======
+        self.sprite_frames = [] # list for sprite frames
+        self.animation_timer = 0
+        self.current_frame = 0
+>>>>>>> 2c7486b6c4ccaaf5764059c977bec1c00b3e73d1
         
+        # If there's a sprite path, load the sprite for animation
+        if spritePath:
+            self.sprite = pygame.image.load(player.png).convert_alpha()
+            self.sprite = pygame.transform.scale(self.sprite, (width, height))
+
+    def render(self, screen):
+        if self.sprite:
+            screen.blit(self.sprite, (self.rect.x, self.rect.y))
+        else:
+            pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
+            
+# platform class
+class platform():
+    def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None):
+        self.rect = pygame.Rect(x ,y ,width,height)
+        self.sprite = None
+        self.type = platform_type
+        self.speed = 0 if platform_type != "moving" else random.randint(1, 3)
+        self.timer = None # timer for breaking platforms
+        self.active = True # breaking platforms will deactivate after breaking
+        
+        if spritePath:
+            self.sprite = pygame.image.load(player.png).convert_alpha()
+            self.sprite = pygame.transform.scale(self.sprite, (width, height))
+
+    def get_platform_colour(self):
+        if self.type == "regular":
+            return (0, 255, 0)  # Green for regular
+        elif self.type == "breaking":
+            return (255, 0, 0)  # Red for breakable
+        elif self.type == "moving":
+            return (0, 0, 255)  # Blue for moving
+        return (255, 255, 255)  # Default to white if unknown
+        
+    # horizontal moving platform
+    def moving(self, screen_width):
+        if self.type == "moving" and self.active:
+            self.rect.x += self.speed
+            # change directions after hitting the edges of the screen
+            if self.rect.left <= 0 or self.rect.right >= screen_width:
+                self.speed = -self.speed
+
+    def breaking_platform(self):
+        if self.type == "breaking" and self.active:
+            self.active = False
+
+    def on_collision(self):
+        if self.type == "breaking" and self.active:
+            if not self.timer:
+                self.timer = time.time()
+            elif time.time() - self.timer > 1.5:
+                self.break_platform()
+        
+    def render(self, screen):
+        colour = self.get_platform_colour() if self.active else (128, 128, 128) # grey = inactive
+        if self.sprite:
+            screen.blit(self.sprite, (self.rect.x, self.rect.y))
+        else:     
+            pygame.draw.rect(screen, colour, self.rect)
+    
+    def respawn(self, screen_width, screen_heigh):
+        if self.rect.top > screen_height:
+            self.rect.x = random.randint(0, screen_width - self.rect.width)
+            self.rect.y = random.randint(-100, -20)
+
+    def scroll(self, speed):
+        self.rect.y += speed # move platform vertically
+        if self.rect.y > 580: # if the platform goes of screen
+            self.rect.y = -20 # reset to the top of the screen
+
+
+def generate_platforms(objects, num_platforms, screen_width, screen_height):
+    platform_width = 100
+    platform_height = 20
+    for _ in range(num_platforms):
+        x = random.randint(0, screen_width - platform_width)
+        y = random.randint(0, screen_height - platform_height)
+
+        platform_type = random.choice(["regular", "breaking", "moving"])
+        speed = random.randint(1, 3) if platform_type == "moving" else 0
+        new_platform = Platform(x, y, platform_width, platform_height, platform_type, speed=speed)
+        objects.append(new_platform)
 
 def main():
     #-----------------------------Setup------------------------------------------------------#
@@ -98,6 +189,7 @@ def main():
 
     pygame.quit()     # Once we leave the loop, close the window.
 
+<<<<<<< HEAD
 
 def render(object, screen):
     if object.sprite:
@@ -122,6 +214,10 @@ def handle_collisions(self, objects):
                 obj.rect.bottom = self.rect.top  # Push out from the bottom
                 
 
+=======
+def handle_collisions(self, objects, axis):
+        #Checks for collisions in the X axis and Y axis seperately (could be done better) between self and all objects. 
+>>>>>>> 2c7486b6c4ccaaf5764059c977bec1c00b3e73d1
 
 
 def checkPlayerInput(player, delta_time, player_speed, objects):
@@ -169,4 +265,12 @@ def updateY(self, delta_time, objects, entities):
 
 
 
+def update_animation(self, delta_time):
+        if self.sprite_frames:
+            self.animation_timer += delta_time
+            if self.animation_timer > 0.1:  # adjust frame speed
+                self.current_frame = (self.current_frame + 1) % len(self.sprite_frames)
+                self.sprite = self.sprite_frames[self.current_frame]
+                self.animation_timer = 0
+                
 main()
