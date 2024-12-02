@@ -62,6 +62,7 @@ class enemy():
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
         else:
             pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
+
 # platform class
 class platform():
     def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None, speed = 0):
@@ -189,13 +190,9 @@ def main():
 
     #List of all active objects on the screen
     objects = []
-    platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-    first_platform = platform(300,600,100,10) ## ivy has 600 for mac
-    objects.append(first_platform)
-
-    #PLACEHOLDER PLATFORM FOR THE PLAYER TO START ON
-    whoops_all_platforms = platform(300,600,100,10)
-    objects.append(whoops_all_platforms)
+   ## platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
+  ##  first_platform = platform(300,600,100,10) ## ivy has 600 for mac
+   ## objects.append(first_platform)
 
     #placeholder enemy
     #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
