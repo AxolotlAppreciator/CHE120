@@ -168,7 +168,108 @@ class Bullet(pygame.sprite.Sprite):
         # Kill bullet if the bullet goes off-screen
         if not self.rect.colliderect(pygame.Rect(0, 0, pygame.display.get_surface().get_width(), pygame.display.get_surface().get_height())):
             self.kill()  # Remove the bullet from the sprite group
+
+def render(object, screen):
+    if object.sprite:
+        screen.blit(object.sprite, (object.rect.x, object.rect.y))
+    else:
+        pygame.draw.rect(screen, (255, 0, 0), object.rect)  # Placeholder red rectangle
+
+def handle_collisions(self, objects):
+    for obj in objects:
+        if self.rect.colliderect(obj.rect):
+            # Check if the object is landing on top of the platform
+            if self.velocity.y > 0 and self.rect.bottom >= obj.rect.top:
+                obj.rect.top = self.rect.bottom  # Snap to the top of the platform
+                self.grounded = True
+                self.velocity.y = 0  # Reset vertical velocity when landing
+            else:
+                self.grounded = False
+                
+def updateObjects(self, delta_time, objects):
+    if self.accelerating:
+        if abs(self.velocity.x) < self.max_speed:
+            self.velocity.x += self.direction * 15
+    else:
+        self.velocity.x *= self.deceleration_rate
     
+    if self.rect.x < -70:
+        self.rect.x = 550
+    elif self.rect.x > 560:
+        self.rect.x = -60
+        #Updates horizontal position and checks for valid collision (x)
+    self.rect.x += self.velocity.x * delta_time
+    handle_collisions(self,objects)
+
+
+def updateY(self, delta_time, objects, entities):
+    # Apply gravity
+
+    # If not grounded, move objects based on the player's velocity
+    if not self.grounded:
+        vertical_offset = self.velocity.y * delta_time
+    else:
+        vertical_offset = 0
+    for obj in objects:
+        obj.rect.y -= vertical_offset
+    for entity in entities:
+        entity.rect.y -= vertical_offset
+
+def update_animation(self, delta_time):
+        if self.sprite_frames:
+            self.animation_timer += delta_time
+            if self.animation_timer > 0.1:  # adjust frame speed
+                self.current_frame = (self.current_frame + 1) % len(self.sprite_frames)
+                self.sprite = self.sprite_frames[self.current_frame]
+                self.animation_timer = 0
+
+def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
+    keys = pygame.key.get_pressed()
+    mouse_buttons = pygame.mouse.get_pressed()
+    
+    # Jump logic
+    if (keys[pygame.K_UP] or keys[pygame.K_w]) and player.grounded:
+        player.velocity.y = -1200  # Adjust jump strength
+        player.grounded = False  # Set player as airborne
+    if not player.grounded:
+     player.velocity.y += 1300 * delta_time
+        
+    # Horizontal movement logic
+    if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+        player.direction = -1
+        player.accelerating = True
+        player.sprite = player.sprite_left  # Flip sprite to the left
+    elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+        player.direction = 1
+        player.accelerating = True
+        player.sprite = pygame.transform.flip(player.sprite_left, True, False)  # Flip sprite back to the right
+    else:
+        player.accelerating = False
+    
+    # Mouse direction calculations
+    mouse_x, mouse_y = pygame.mouse.get_pos()  # Get mouse position on screen
+    dx = mouse_x - player.rect.centerx 
+    dy = mouse_y - player.rect.centery
+    distance = math.hypot(dx, dy) # Distance from player to mouse
+    
+    if distance != 0:  # Avoid division by zero
+        direction_vector = pygame.Vector2(dx, dy).normalize()
+    else:
+        direction_vector = pygame.Vector2(0, 0)
+    
+    # Shoot logic
+    if mouse_buttons[0]:  
+        if not player.mouse_held: 
+            bullet = Bullet(player.rect.centerx, player.rect.centery, direction_vector, 10)  # Create bullet
+            bullets_group.add(bullet)  
+            player.mouse_held = True 
+
+    # If mouse button is released, reset flag (allow next shot on next click)
+    if not mouse_buttons[0]:
+        player.mouse_held = False
+       
+    return bullets_group
+
 def main():
     #-----------------------------Setup------------------------------------------------------#
     """ Set up the game and run the main game loop """
@@ -269,109 +370,5 @@ def main():
             clock.tick(60)
 
     pygame.quit()     # Once we leave the loop, close the window.
-
-
-def render(object, screen):
-    if object.sprite:
-        screen.blit(object.sprite, (object.rect.x, object.rect.y))
-    else:
-        pygame.draw.rect(screen, (255, 0, 0), object.rect)  # Placeholder red rectangle
-
-def handle_collisions(self, objects):
-    for obj in objects:
-        if self.rect.colliderect(obj.rect):
-            # Check if the object is landing on top of the platform
-            if self.velocity.y > 0 and self.rect.bottom >= obj.rect.top:
-                obj.rect.top = self.rect.bottom  # Snap to the top of the platform
-                self.grounded = True
-                self.velocity.y = 0  # Reset vertical velocity when landing
-            else:
-                self.grounded = False
-                
-def updateObjects(self, delta_time, objects):
-    if self.accelerating:
-        if abs(self.velocity.x) < self.max_speed:
-            self.velocity.x += self.direction * 15
-    else:
-        self.velocity.x *= self.deceleration_rate
-    
-    if self.rect.x < -70:
-        self.rect.x = 550
-    elif self.rect.x > 560:
-        self.rect.x = -60
-        #Updates horizontal position and checks for valid collision (x)
-    self.rect.x += self.velocity.x * delta_time
-    handle_collisions(self,objects)
-
-
-def updateY(self, delta_time, objects, entities):
-    # Apply gravity
-
-    # If not grounded, move objects based on the player's velocity
-    if not self.grounded:
-        vertical_offset = self.velocity.y * delta_time
-    else:
-        vertical_offset = 0
-    for obj in objects:
-        obj.rect.y -= vertical_offset
-    for entity in entities:
-        entity.rect.y -= vertical_offset
-
-
-
-def update_animation(self, delta_time):
-        if self.sprite_frames:
-            self.animation_timer += delta_time
-            if self.animation_timer > 0.1:  # adjust frame speed
-                self.current_frame = (self.current_frame + 1) % len(self.sprite_frames)
-                self.sprite = self.sprite_frames[self.current_frame]
-                self.animation_timer = 0
-
-def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
-    keys = pygame.key.get_pressed()
-    mouse_buttons = pygame.mouse.get_pressed()
-    
-    # Jump logic
-    if (keys[pygame.K_UP] or keys[pygame.K_w]) and player.grounded:
-        player.velocity.y = -1200  # Adjust jump strength
-        player.grounded = False  # Set player as airborne
-    if not player.grounded:
-     player.velocity.y += 1300 * delta_time
-        
-    # Horizontal movement logic
-    if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-        player.direction = -1
-        player.accelerating = True
-        player.sprite = player.sprite_left  # Flip sprite to the left
-    elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-        player.direction = 1
-        player.accelerating = True
-        player.sprite = pygame.transform.flip(player.sprite_left, True, False)  # Flip sprite back to the right
-    else:
-        player.accelerating = False
-    
-    # Mouse direction calculations
-    mouse_x, mouse_y = pygame.mouse.get_pos()  # Get mouse position on screen
-    dx = mouse_x - player.rect.centerx 
-    dy = mouse_y - player.rect.centery
-    distance = math.hypot(dx, dy) # Distance from player to mouse
-    
-    if distance != 0:  # Avoid division by zero
-        direction_vector = pygame.Vector2(dx, dy).normalize()
-    else:
-        direction_vector = pygame.Vector2(0, 0)
-    
-    # Shoot logic
-    if mouse_buttons[0]:  
-        if not player.mouse_held: 
-            bullet = Bullet(player.rect.centerx, player.rect.centery, direction_vector, 10)  # Create bullet
-            bullets_group.add(bullet)  
-            player.mouse_held = True 
-
-    # If mouse button is released, reset flag (allow next shot on next click)
-    if not mouse_buttons[0]:
-        player.mouse_held = False
-       
-    return bullets_group
                 
 main()
