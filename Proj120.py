@@ -139,51 +139,51 @@ def main():
 
 
     font = pygame.font.Font(None, 36)
-    player = moving_entity(300,300,100,150,200,0.85,"images/player.png")
+    player = moving_entity(300,300,75,100,200,0.85,"images/player.png")
     player.velocity.y = 497
 
     #List of all active objects on the screen
     objects = []
 
     #PLACEHOLDER PLATFORM FOR THE PLAYER TO START ON
-    whoops_all_platforms = platform(300,350,200,20)
+    whoops_all_platforms = platform(300,350,100,10)
     objects.append(whoops_all_platforms)
     #List of active entities that get updated each frame
     activeEntities = []
-    gamestate = 0
+    gamestate = 1
     score = 0
 #     press start tp space
 #     either learn another way t hold downt he key or learn how to do both at the same
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
-        delta_time = clock.get_time() / 1000 # Time since last frame
-        #-----------------------------Event Handling-----------------------------------------#
-        ev = pygame.event.poll()    # Look for any event
-        if ev.type == pygame.QUIT:  # Window close button clicked?
-            break
-        if ev.type == pygame.KEYDOWN:
-            if ev.key == pygame.K_ESCAPE:
-                break
-        mainSurface.fill((53, 80, 112))
-        #print(player.velocity.y)
-        checkPlayerInput(player, delta_time, 200, objects)
-        for obj in objects:
-            if player.rect.y > obj.rect.y + 60:
-                player.rect.y += 500 * delta_time
-            else:
-                player.rect.y = 300
-
-        updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
-        updateObjects(player, delta_time, objects)           # Update X-axis movement
-        handle_collisions(player, objects)
-        score = score + 1
-        score_text = font.render(f'Score: {score}', True, (255, 255, 255))
-        mainSurface.blit(score_text, (10, 10))      
+        
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
 
         if gamestate == 1:
-            pass
+            delta_time = clock.get_time() / 1000 # Time since last frame
+            #-----------------------------Event Handling-----------------------------------------#
+            ev = pygame.event.poll()    # Look for any event
+            if ev.type == pygame.QUIT:  # Window close button clicked?
+                break
+            if ev.type == pygame.KEYDOWN:
+                if ev.key == pygame.K_ESCAPE:
+                    break
+            mainSurface.fill((53, 80, 112))
+            #print(player.velocity.y)
+            checkPlayerInput(player, delta_time, 200, objects)
+            for obj in objects:
+                if player.rect.y > obj.rect.y + 60:
+                    player.rect.y += 500 * delta_time
+                else:
+                    player.rect.y = 300
+
+            updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
+            updateObjects(player, delta_time, objects)           # Update X-axis movement
+            handle_collisions(player, objects)
+            score = score + 1
+            score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+            mainSurface.blit(score_text, (10, 10))      
 
         #-----------------------------Drawing Everything-------------------------------------#
         # We draw everything from scratch on each frame.
@@ -191,14 +191,14 @@ def main():
         
 
         # Rendering and updating objects and entities ->
-        player.render(mainSurface)
+            player.render(mainSurface)
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])  # Clear the screen
-        player.render(mainSurface)
-        for obj in objects:
-            obj.render(mainSurface)
-        pygame.display.flip()
-        clock.tick(60)
+            player.render(mainSurface)
+            for obj in objects:
+                obj.render(mainSurface)
+            pygame.display.flip()
+            clock.tick(60)
 
     pygame.quit()     # Once we leave the loop, close the window.
 
