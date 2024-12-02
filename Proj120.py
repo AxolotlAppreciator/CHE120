@@ -138,7 +138,7 @@ def main():
 
 
     font = pygame.font.Font(None, 36)
-    player = moving_entity(300,300,100,150,200,0.85,"images\player.png")
+    player = moving_entity(300,300,100,150,200,0.85,"images/player.png")
     player.velocity.y = 497
 
     #List of all active objects on the screen
