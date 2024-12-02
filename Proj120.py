@@ -15,7 +15,7 @@ class moving_entity():
         self.acceleration = pygame.Vector2(0,0)
         self.deceleration_rate = deceleration_rate
         self.sprite = None
-        self.grounded = True
+        self.grounded = False
         self.accelerating = False
         self.direction = 0
         self.max_speed = max_speed
@@ -194,7 +194,7 @@ def main():
 
     #placeholder enemy
     #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
-    enemy1 = enemy(200,200,50,75,10,spritePath = "images/enemy.png")
+    enemy1 = enemy(200,300,50,75,10,spritePath = "images/enemy.png")
     #List of active entities that get updated each frame
     activeEntities = [enemy1]
     gamestate = 1
