@@ -51,8 +51,10 @@ class enemy():
 
     def movementBehaviour(self,originalX,maxDist):
         if self.rect.x < originalX + maxDist:
+            print("moving left")
             self.direction = -1
         elif self.rect.x > originalX - maxDist:
+            print("moving right")
             self.direction = 1
 
     def render(self, screen):
