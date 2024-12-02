@@ -124,10 +124,10 @@ class platform():
             self.active = True
             self.timer = None
 
-    ##def scroll(self, speed):
-     ##   self.rect.y += speed # move platform vertically
-      ##  if self.rect.y > 580: # if the platform goes of screen
-       ##     self.rect.y = -20 # reset to the top of the screen
+   # def scroll(self, speed):
+       # self.rect.y += speed # move platform vertically
+      #  if self.rect.y > 580: # if the platform goes of screen
+       #     self.rect.y = -20 # reset to the top of the screen
 
     # @staticmethod
     def generate_platforms(objects, num_platforms, screen_width, screen_height):
@@ -168,15 +168,6 @@ class Bullet(pygame.sprite.Sprite):
         # Kill bullet if the bullet goes off-screen
         if not self.rect.colliderect(pygame.Rect(0, 0, pygame.display.get_surface().get_width(), pygame.display.get_surface().get_height())):
             self.kill()  # Remove the bullet from the sprite group
-            
-     # Handle collisions with platforms or enemies
-        for obj in objects:
-            if self.rect.colliderect(obj.rect):  # If bullet collides with object
-                if isinstance(obj, platform):  # If object is a platform
-                    self.kill()  # Destroy the bullet
-                elif isinstance(obj, enemy):  # If object is an enemy
-                    self.kill()  # Destroy the bullet
-                    obj.health -= 1  # Decrease enemy health or trigger behavior
     
 def main():
     #-----------------------------Setup------------------------------------------------------#
@@ -218,16 +209,7 @@ def main():
         
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
-        if gamestate == 0:
-            ev = pygame.event.poll()    # Look for any event
-            if ev.type == pygame.QUIT:  # Window close button clicked?
-                break
-            if ev.type == pygame.KEYDOWN:
-                if ev.key == pygame.K_ESCAPE:
-                    break
-            mainSurface.fill((53, 80, 112))
-            logo_text = font.render('Chill Jump', True, (255, 255, 255))
-            mainSurface.blit(logo_text, (100, 100))
+    
         if gamestate == 1:
             delta_time = clock.get_time() / 1000 # Time since last frame
             #-----------------------------Event Handling-----------------------------------------#
@@ -263,7 +245,7 @@ def main():
                    # platform.respawn(surfaceSize, surfaceSize)
                   #  if player.rect.colliderect(platform.rect):
                        # if platform.active:
-                          #  platform.on_collision()
+                         #   platform.on_collision()
                           #  player.grounded = True
                           #  player.rect.bottom = platform.rect.top
 
@@ -309,7 +291,7 @@ def handle_collisions(self, objects):
                 obj.rect.top = self.rect.bottom  # Push out from the top
                 self.grounded = True
             elif self.rect.top < obj.rect.bottom and self.rect.bottom > obj.rect.bottom:
-                self.rect.bottom = obj.rect.top  # Push out from the bottom
+                obj.rect.bottom = self.rect.top  # Push out from the bottom
                 
 
 
