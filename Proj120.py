@@ -32,7 +32,16 @@ class moving_entity():
         else:
             pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
 
-
+class enemy():
+    def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
+        self.rect = pygame.Rect(x,y,width,height)
+        self.sprite = None
+        self.type = enemy_type
+        self.velocity = 0
+        self.health = 0
+        if spritePath:
+            self.sprite = pygame.image.load(spritePath).convert_alpha
+            self.sprite = pygame.transform.scale(self.sprite,(width,height))
 
 
 # platform class
@@ -152,8 +161,7 @@ def main():
     activeEntities = []
     gamestate = 1
     score = 0
-#     press start tp space
-#     either learn another way t hold downt he key or learn how to do both at the same
+
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
         
@@ -174,7 +182,8 @@ def main():
             checkPlayerInput(player, delta_time, 200, objects)
             for obj in objects:
                 if player.rect.y > obj.rect.y + 60:
-                    player.rect.y += 500 * delta_time
+                    # player.rect.y += 500 * delta_time
+                    pass
                 else:
                     player.rect.y = 300
 
@@ -236,7 +245,7 @@ def checkPlayerInput(player, delta_time, player_speed, objects):
         player.velocity.y = -800  # Adjust jump strength
         player.grounded = False  # Set player as airborne
     if not player.grounded:
-        player.velocity.y += 1300 * delta_time
+     player.velocity.y += 1300 * delta_time
         
     # Horizontal movement logic
     if keys[pygame.K_LEFT] or keys[pygame.K_a]:
