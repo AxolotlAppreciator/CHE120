@@ -305,8 +305,7 @@ def handle_collisions(self, objects):
             #    self.rect.left = obj.rect.right  # Push out from the right
 
         # Vertical adjustment
-            if self.rect.bottom > obj.rect.top and self.rect.top < obj.rect.top:
-                obj.rect.top = self.rect.bottom  # Push out from the top
+            if self.rect.bottom > obj.rect.top + 10:
                 self.grounded = True
             elif self.rect.top < obj.rect.bottom and self.rect.bottom > obj.rect.bottom:
                 self.rect.bottom = obj.rect.top  # Push out from the bottom
