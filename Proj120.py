@@ -129,7 +129,6 @@ class platform():
         if self.rect.y > 580: # if the platform goes of screen
             self.rect.y = -20 # reset to the top of the screen
 
-    #@staticmethod
     def generate_platforms(objects, num_platforms, screen_width, screen_height):
         platform_width = 100
         platform_height = 20
