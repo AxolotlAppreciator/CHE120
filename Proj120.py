@@ -133,8 +133,8 @@ class Platform():
         platform_height = 20
         platform_types = ["regular", 'breaking', 'moving']
         probabilities = [0.7, 0.2, 0.1]
-        vertical_gap = 100
-        y_position = screen_height - 100
+        vertical_gap = 175
+        y_position = 400
         
         for _ in range(num_platforms):
             x = random.randint(0, screen_width - platform_width)
@@ -185,13 +185,13 @@ def main():
 
 
     font = pygame.font.Font(None, 36)
-    player = moving_entity(300,290,75,100,200,0.85,"images/player.png")
+    player = moving_entity(300,550,75,100,200,0.85,"images/player.png")
     player.velocity.y = 497
 
     #List of all active objects on the screen
     objects = []
     Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-    first_platform = Platform(300,400,100,10) ## ivy has 600 for mac
+    first_platform = Platform(300,600,100,10) ## ivy has 600 for mac
     objects.append(first_platform)
 
     #placeholder enemy
