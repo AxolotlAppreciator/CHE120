@@ -136,7 +136,7 @@ class platform():
         platform_types = ["regular", 'breaking', 'moving']
         probabilities = [0.7, 0.2, 0.1]
         vertical_gap = 150
-        y_position = screen_height - 50
+        y_position = 400
         
         for _ in range(num_platforms):
             x = random.randint(0, screen_width - platform_width)
