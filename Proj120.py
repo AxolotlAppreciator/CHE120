@@ -53,7 +53,7 @@ class enemy():
 
 # platform class
 class platform():
-    def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None):
+    def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None, speed = 0):
         self.rect = pygame.Rect(x ,y ,width,height)
         self.sprite = None
         self.type = platform_type
@@ -78,7 +78,7 @@ class platform():
     # horizontal moving platform
     def moving(self, screen_width):
         if self.type == "moving" and self.active:
-            self.rect.x += self.speed
+            self.rect.x += self.speed * delta_time
             # change directions after hitting the edges of the screen
             if self.rect.left <= 0 or self.rect.right >= screen_width:
                 self.speed = -self.speed
@@ -87,13 +87,17 @@ class platform():
         if self.type == "breaking" and self.active:
             self.active = False
 
+    def handle_breaking(self):
+        if self.timer is None:
+            self.timer = time.time()
+        elif time.time() - self.timer > 1.5: 
+            self.active = True
+
     def on_collision(self):
         if self.type == "breaking" and self.active:
-            if not self.timer:
-                self.timer = time.time()
-            elif time.time() - self.timer > 1.5:
-                self.break_platform()
-        
+            self.active = False
+            self.timer = time.time()
+
     def render(self, screen):
         colour = self.get_platform_colour() if self.active else (128, 128, 128) # grey = inactive
         if self.sprite:
@@ -105,35 +109,31 @@ class platform():
         if self.rect.top > screen_height:
             self.rect.x = random.randint(0, screen_width - self.rect.width)
             self.rect.y = random.randint(-100, -20)
+            self.active = True
+            self.timer = None
 
     def scroll(self, speed):
         self.rect.y += speed # move platform vertically
         if self.rect.y > 580: # if the platform goes of screen
             self.rect.y = -20 # reset to the top of the screen
 
-
+    @staticmethod
     def generate_platforms(objects, num_platforms, screen_width, screen_height):
         platform_width = 100
         platform_height = 20
-
-        # the probabilities for each platform type
         platform_types = ["regular", 'breaking', 'moving']
         probabilities = [0.7, 0.2, 0.1]
-
         vertical_gap = 150
+        y_position = screen_height - 50
         
         for _ in range(num_platforms):
             x = random.randint(0, screen_width - platform_width)
-            y = previous_y - vertical_gap
-
-            if y < 0:
-                y = 0
-
+            y = y_position
             platform_type = random.choices(platform_types, probabilities)[0]
-            speed = random.randint(1, 3) if platform_type == "moving" else 0
+            speed = random.randint(50, 100) if platform_type == "moving" else 0
             new_platform = platform(x, y, platform_width, platform_height, platform_type, speed=speed)
             objects.append(new_platform)
-            previous_y = y
+            y_position -= vertical_gap
 
     def platform_generation_collision():
         pass
@@ -159,10 +159,10 @@ def main():
 
     #List of all active objects on the screen
     objects = []
+    platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
+    first_platform = platform(300,600,100,10) ## ivy has 600 for mac
+    objects.append(first_platform)
 
-    #PLACEHOLDER PLATFORM FOR THE PLAYER TO START ON
-    whoops_all_platforms = platform(300,350,100,10)
-    objects.append(whoops_all_platforms)
     #List of active entities that get updated each frame
     activeEntities = []
     gamestate = 1
@@ -184,6 +184,7 @@ def main():
                 if ev.key == pygame.K_ESCAPE:
                     break
             mainSurface.fill((53, 80, 112))
+
             #print(player.velocity.y)
             checkPlayerInput(player, delta_time, 200, objects)
             for obj in objects:
@@ -206,7 +207,7 @@ def main():
         
 
         # Rendering and updating objects and entities ->
-            player.render(mainSurface)
+            player.render(mainSurface) ## why is there two lol
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])  # Clear the screen
             player.render(mainSurface)
