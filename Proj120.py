@@ -44,13 +44,21 @@ class enemy():
         originalX = x
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
-            self.sprite = pygame.transform.scale(self.sprite,(width,height))
-
+            self.sprite = pygame.transform.scale(self.sprite, (width+30, height))
+            
     def backAndForth(self,originalX,speed,delta_time):
+        print("moving")
         if self.rect.x > originalX + 50:
             self.rect.x += speed * delta_time
         elif self.rect.x < originalX - 50:
             self.rect.x -= speed * delta_time
+    def render(self, screen):
+        print("rendering enemy")
+        if self.sprite:
+            screen.blit(self.sprite, (self.rect.x, self.rect.y))
+        else:
+            pygame.draw.rect(screen, (0, 255, 0), self.rect)
+
 
 
 # platform class
@@ -184,6 +192,10 @@ def main():
     #PLACEHOLDER PLATFORM FOR THE PLAYER TO START ON
     whoops_all_platforms = platform(300,600,100,10)
     objects.append(whoops_all_platforms)
+
+    #placeholder enemy
+    #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
+    enemy1 = enemy(200,200,50,75,10,spritePath = "/images/enemy.png")
     #List of active entities that get updated each frame
     activeEntities = []
     gamestate = 1
