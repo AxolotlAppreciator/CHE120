@@ -158,6 +158,15 @@ class Bullet(pygame.sprite.Sprite):
         # Kill bullet if the bullet goes off-screen
         if not self.rect.colliderect(pygame.Rect(0, 0, pygame.display.get_surface().get_width(), pygame.display.get_surface().get_height())):
             self.kill()  # Remove the bullet from the sprite group
+            
+     # Handle collisions with platforms or enemies
+        for obj in objects:
+            if self.rect.colliderect(obj.rect):  # If bullet collides with object
+                if isinstance(obj, platform):  # If object is a platform
+                    self.kill()  # Destroy the bullet
+                elif isinstance(obj, enemy):  # If object is an enemy
+                    self.kill()  # Destroy the bullet
+                    obj.health -= 1  # Decrease enemy health or trigger behavior
     
 def main():
     #-----------------------------Setup------------------------------------------------------#
