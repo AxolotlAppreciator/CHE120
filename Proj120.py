@@ -15,7 +15,7 @@ class moving_entity():
         self.acceleration = pygame.Vector2(0,0)
         self.deceleration_rate = deceleration_rate
         self.sprite = None
-        self.grounded = True
+        self.grounded = False
         self.accelerating = False
         self.direction = 0
         self.max_speed = max_speed
@@ -47,32 +47,19 @@ class enemy():
         self.originalX = x
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
-<<<<<<< HEAD
-            self.sprite = pygame.transform.scale(self.sprite, (width+30, height))
-            
+            self.sprite = pygame.transform.scale(self.sprite,(width,height))
+
     def movementBehaviour(self,originalX,maxDist):
-        print("moving")
         if self.rect.x < originalX + maxDist:
-            self.direction = 1
-        elif self.rect.x > originalX - maxDist:
             self.direction = -1
+        elif self.rect.x > originalX - maxDist:
+            self.direction = 1
+
     def render(self, screen):
         if self.sprite:
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
         else:
-            pygame.draw.rect(screen, (0, 255, 0), self.rect)
-
-=======
-            self.sprite = pygame.transform.scale(self.sprite,(width,height))
-
-    def backAndForth(self,originalX,speed,delta_time):
-        if self.rect.x > originalX + 50:
-            self.rect.x += speed * delta_time
-        elif self.rect.x < originalX - 50:
-            self.rect.x -= speed * delta_time
->>>>>>> 2ec51ab4b09204742902701ee80e5366347f08cc
-
-
+            pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
 # platform class
 class platform():
     def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None):
@@ -204,15 +191,12 @@ def main():
     #PLACEHOLDER PLATFORM FOR THE PLAYER TO START ON
     whoops_all_platforms = platform(300,600,100,10)
     objects.append(whoops_all_platforms)
-<<<<<<< HEAD
 
     #placeholder enemy
     #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
     enemy1 = enemy(200,300,50,75,100,spritePath = "images/enemy.png")
-=======
->>>>>>> 2ec51ab4b09204742902701ee80e5366347f08cc
     #List of active entities that get updated each frame
-    activeEntities = []
+    activeEntities = [enemy1]
     gamestate = 1
     score = 0
     bullets_group = pygame.sprite.Group()
@@ -264,14 +248,11 @@ def main():
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])  # Clear the screen
             for obj in objects:
                 obj.render(mainSurface)
-<<<<<<< HEAD
             for entity in activeEntities:
                 entity.render(mainSurface)
                 updateObjects(entity, delta_time, objects)
                 entity.movementBehaviour(entity.originalX, entity.maxDist)
                 
-=======
->>>>>>> 2ec51ab4b09204742902701ee80e5366347f08cc
             pygame.display.flip()
             clock.tick(60)
 
@@ -372,8 +353,10 @@ def updateY(self, delta_time, objects, entities):
     # Apply gravity
 
     # If not grounded, move objects based on the player's velocity
-
-    vertical_offset = self.velocity.y * delta_time
+    if not self.grounded:
+        vertical_offset = self.velocity.y * delta_time
+    else:
+        vertical_offset = 0
     for obj in objects:
         obj.rect.y -= vertical_offset
     for entity in entities:
