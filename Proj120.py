@@ -373,6 +373,7 @@ def updateY(self, delta_time, objects, entities):
 
     # If not grounded, move objects based on the player's velocity
 
+    vertical_offset = self.velocity.y * delta_time
     for obj in objects:
         obj.rect.y -= vertical_offset
     for entity in entities:
