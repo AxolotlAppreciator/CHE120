@@ -4,7 +4,7 @@ import random
 import time
 
 pygame.display.set_caption("Chill Jump")
-font = pygame.font.SysFont(None,25) ## change to comic sans and pick sizing and whatnot
+## font = pygame.font.SysFont(None,25) ## change to comic sans and pick sizing and whatnot
 
 #Instantiate a new player entity
 class moving_entity():     
