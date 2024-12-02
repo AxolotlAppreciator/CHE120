@@ -200,7 +200,7 @@ def main():
     #List of all active objects on the screen
     objects = []
     platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-    first_platform = platform(300,600,100,10) ## ivy has 600 for mac
+    first_platform = platform(300,400,100,10) ## ivy has 600 for mac
     objects.append(first_platform)
 
     #placeholder enemy
@@ -309,7 +309,7 @@ def handle_collisions(self, objects):
                 obj.rect.top = self.rect.bottom  # Push out from the top
                 self.grounded = True
             elif self.rect.top < obj.rect.bottom and self.rect.bottom > obj.rect.bottom:
-                obj.rect.bottom = self.rect.top  # Push out from the bottom
+                self.rect.bottom = obj.rect.top  # Push out from the bottom
                 
 
 
