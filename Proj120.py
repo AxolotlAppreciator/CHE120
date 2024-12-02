@@ -15,7 +15,7 @@ class moving_entity():
         self.acceleration = pygame.Vector2(0,0)
         self.deceleration_rate = deceleration_rate
         self.sprite = None
-        self.grounded = False
+        self.grounded = True
         self.accelerating = False
         self.direction = 0
         self.max_speed = max_speed
@@ -47,6 +47,7 @@ class enemy():
         self.originalX = x
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
+<<<<<<< HEAD
             self.sprite = pygame.transform.scale(self.sprite, (width+30, height))
             
     def movementBehaviour(self,originalX,maxDist):
@@ -61,6 +62,15 @@ class enemy():
         else:
             pygame.draw.rect(screen, (0, 255, 0), self.rect)
 
+=======
+            self.sprite = pygame.transform.scale(self.sprite,(width,height))
+
+    def backAndForth(self,originalX,speed,delta_time):
+        if self.rect.x > originalX + 50:
+            self.rect.x += speed * delta_time
+        elif self.rect.x < originalX - 50:
+            self.rect.x -= speed * delta_time
+>>>>>>> 2ec51ab4b09204742902701ee80e5366347f08cc
 
 
 # platform class
@@ -160,7 +170,7 @@ class Bullet(pygame.sprite.Sprite):
         self.direction = direction
         self.speed = speed
 
-    def update(self):
+    def update(self, objects):
         # Move bullet in the direction of  vector
         self.rect.x += self.direction.x * self.speed
         self.rect.y += self.direction.y * self.speed
@@ -168,7 +178,7 @@ class Bullet(pygame.sprite.Sprite):
         # Kill bullet if the bullet goes off-screen
         if not self.rect.colliderect(pygame.Rect(0, 0, pygame.display.get_surface().get_width(), pygame.display.get_surface().get_height())):
             self.kill()  # Remove the bullet from the sprite group
-
+    
 def main():
     #-----------------------------Setup------------------------------------------------------#
     """ Set up the game and run the main game loop """
@@ -194,12 +204,15 @@ def main():
     #PLACEHOLDER PLATFORM FOR THE PLAYER TO START ON
     whoops_all_platforms = platform(300,600,100,10)
     objects.append(whoops_all_platforms)
+<<<<<<< HEAD
 
     #placeholder enemy
     #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
     enemy1 = enemy(200,300,50,75,100,spritePath = "images/enemy.png")
+=======
+>>>>>>> 2ec51ab4b09204742902701ee80e5366347f08cc
     #List of active entities that get updated each frame
-    activeEntities = [enemy1]
+    activeEntities = []
     gamestate = 1
     score = 0
     bullets_group = pygame.sprite.Group()
@@ -222,8 +235,8 @@ def main():
                     break
             mainSurface.fill((53, 80, 112))
             bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
-            bullets_group.update()
-
+            for bullet in bullets_group:
+                bullet.update(objects)
             #print(player.velocity.y)
             checkPlayerInput(player, delta_time, 200, objects, bullets_group)
             for obj in objects:
@@ -251,11 +264,14 @@ def main():
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])  # Clear the screen
             for obj in objects:
                 obj.render(mainSurface)
+<<<<<<< HEAD
             for entity in activeEntities:
                 entity.render(mainSurface)
                 updateObjects(entity, delta_time, objects)
                 entity.movementBehaviour(entity.originalX, entity.maxDist)
                 
+=======
+>>>>>>> 2ec51ab4b09204742902701ee80e5366347f08cc
             pygame.display.flip()
             clock.tick(60)
 
@@ -296,7 +312,7 @@ def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
         player.velocity.y = -800  # Adjust jump strength
         player.grounded = False  # Set player as airborne
     if not player.grounded:
-     player.velocity.y += 1800 * delta_time
+     player.velocity.y += 1300 * delta_time
         
     # Horizontal movement logic
     if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -322,13 +338,13 @@ def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
         direction_vector = pygame.Vector2(0, 0)
     
     # Shoot logic
-    if mouse_buttons[0]:  # Left mouse button is pressed (clicked)
-        if not player.mouse_held:  # If it's the first click, fire a bullet
-            bullet = Bullet(player.rect.centerx, player.rect.centery, direction_vector, 10)  # Create a bullet
-            bullets_group.add(bullet)  # Add bullet to the group
-            player.mouse_held = True  # Set the flag to prevent continuous firing while the button is held down
+    if mouse_buttons[0]:  
+        if not player.mouse_held: 
+            bullet = Bullet(player.rect.centerx, player.rect.centery, direction_vector, 10)  # Create bullet
+            bullets_group.add(bullet)  
+            player.mouse_held = True 
 
-    # If mouse button is released, reset the flag (allow the next shot on next click)
+    # If mouse button is released, reset flag (allow next shot on next click)
     if not mouse_buttons[0]:
         player.mouse_held = False
        
@@ -357,10 +373,6 @@ def updateY(self, delta_time, objects, entities):
 
     # If not grounded, move objects based on the player's velocity
 
-    if not self.grounded:
-        vertical_offset = self.velocity.y * delta_time
-    else:
-        vertical_offset = 0
     for obj in objects:
         obj.rect.y -= vertical_offset
     for entity in entities:
