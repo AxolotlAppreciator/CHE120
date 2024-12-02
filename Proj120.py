@@ -62,7 +62,7 @@ class enemy():
             pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
 
 # platform class
-class platform():
+class Platform():
     def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None, speed = 0):
         self.rect = pygame.Rect(x ,y ,width,height)
         self.sprite = None
@@ -115,17 +115,17 @@ class platform():
         else:     
             pygame.draw.rect(screen, colour, self.rect)
     
-    def respawn(self, screen_width, screen_height):
-        if self.rect.top > screen_height:
-            self.rect.x = random.randint(0, screen_width - self.rect.width)
-            self.rect.y = random.randint(-100, -20)
-            self.active = True
-            self.timer = None
+    ##def respawn(self, screen_width, screen_height):
+        ##if self.rect.top > screen_height:
+          ##  self.rect.x = random.randint(0, screen_width - self.rect.width)
+         ##   self.rect.y = random.randint(-100, -20)
+          ##  self.active = True
+          ##  self.timer = None
 
-    ##def scroll(self, speed):
-     ##   self.rect.y += speed # move platform vertically
-      ##  if self.rect.y > 580: # if the platform goes of screen
-       ##     self.rect.y = -20 # reset to the top of the screen
+   # def scroll(self, speed):
+       # self.rect.y += speed # move platform vertically
+      #  if self.rect.y > 580: # if the platform goes of screen
+       #     self.rect.y = -20 # reset to the top of the screen
 
     # @staticmethod
     def generate_platforms(objects, num_platforms, screen_width, screen_height):
@@ -133,15 +133,17 @@ class platform():
         platform_height = 20
         platform_types = ["regular", 'breaking', 'moving']
         probabilities = [0.7, 0.2, 0.1]
-        vertical_gap = 150
-        y_position = screen_height - 50
+        vertical_gap = 100
+        y_position = screen_height - 100
         
         for _ in range(num_platforms):
             x = random.randint(0, screen_width - platform_width)
             y = y_position
+            while any(p.rect.colliderect(pygame.Rect(x, y, platform_width, platform_height)) for p in objects):
+                x = random.randint(0, screen_width - platform_width)
+                y = random.randint(y_position - vertical_gap, y_position)
             platform_type = random.choices(platform_types, probabilities)[0]
-            speed = random.randint(50, 100) if platform_type == "moving" else 0
-            new_platform = platform(x, y, platform_width, platform_height, platform_type, speed=speed)
+            new_platform = Platform(x, y, platform_width, platform_height, platform_type)
             objects.append(new_platform)
             y_position -= vertical_gap
 
@@ -166,15 +168,6 @@ class Bullet(pygame.sprite.Sprite):
         # Kill bullet if the bullet goes off-screen
         if not self.rect.colliderect(pygame.Rect(0, 0, pygame.display.get_surface().get_width(), pygame.display.get_surface().get_height())):
             self.kill()  # Remove the bullet from the sprite group
-            
-     # Handle collisions with platforms or enemies
-        for obj in objects:
-            if self.rect.colliderect(obj.rect):  # If bullet collides with object
-                if isinstance(obj, platform):  # If object is a platform
-                    self.kill()  # Destroy the bullet
-                elif isinstance(obj, enemy):  # If object is an enemy
-                    self.kill()  # Destroy the bullet
-                    obj.health -= 1  # Decrease enemy health or trigger behavior
     
 def main():
     #-----------------------------Setup------------------------------------------------------#
@@ -197,8 +190,8 @@ def main():
 
     #List of all active objects on the screen
     objects = []
-    platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-    first_platform = platform(300,400,100,10) ## ivy has 600 for mac
+    Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
+    first_platform = Platform(300,400,100,10) ## ivy has 600 for mac
     objects.append(first_platform)
 
     #placeholder enemy
@@ -216,16 +209,7 @@ def main():
         
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
-        if gamestate == 0:
-            ev = pygame.event.poll()    # Look for any event
-            if ev.type == pygame.QUIT:  # Window close button clicked?
-                break
-            if ev.type == pygame.KEYDOWN:
-                if ev.key == pygame.K_ESCAPE:
-                    break
-            mainSurface.fill((53, 80, 112))
-            logo_text = font.render('Chill Jump', True, (255, 255, 255))
-            mainSurface.blit(logo_text, (100, 100))
+    
         if gamestate == 1:
             delta_time = clock.get_time() / 1000 # Time since last frame
             #-----------------------------Event Handling-----------------------------------------#
@@ -261,7 +245,7 @@ def main():
                    # platform.respawn(surfaceSize, surfaceSize)
                   #  if player.rect.colliderect(platform.rect):
                        # if platform.active:
-                          #  platform.on_collision()
+                         #   platform.on_collision()
                           #  player.grounded = True
                           #  player.rect.bottom = platform.rect.top
 
