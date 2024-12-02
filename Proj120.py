@@ -90,7 +90,7 @@ class platform():
     # horizontal moving platform
     def moving(self, screen_width):
         if self.type == "moving" and self.active:
-            self.rect.x += self.speed * delta_time
+            self.rect.x += self.speed
             # change directions after hitting the edges of the screen
             if self.rect.left <= 0 or self.rect.right >= screen_width:
                 self.speed = -self.speed
@@ -129,6 +129,7 @@ class platform():
         if self.rect.y > 580: # if the platform goes of screen
             self.rect.y = -20 # reset to the top of the screen
 
+    # @staticmethod
     def generate_platforms(objects, num_platforms, screen_width, screen_height):
         platform_width = 100
         platform_height = 20
@@ -247,15 +248,15 @@ def main():
             score_text = font.render(f'Score: {score}', True, (255, 255, 255))
             mainSurface.blit(score_text, (10, 10))      
 
-            for platform in objects:
-                if isinstance(platform, Platform):  
-                    platform.update(surfaceSize, delta_time) 
-                    platform.respawn(surfaceSize, surfaceSize)
-                    if player.rect.colliderect(platform.rect):
-                        if platform.active:
-                            platform.on_collision()
-                            player.grounded = True
-                            player.rect.bottom = platform.rect.top
+           # for platform in objects:
+              #  if isinstance(platform, Platform):  
+                   # platform.update(surfaceSize, delta_time) 
+                   # platform.respawn(surfaceSize, surfaceSize)
+                  #  if player.rect.colliderect(platform.rect):
+                       # if platform.active:
+                          #  platform.on_collision()
+                          #  player.grounded = True
+                          #  player.rect.bottom = platform.rect.top
 
         #-----------------------------Drawing Everything-------------------------------------#
         # We draw everything from scratch on each frame.
