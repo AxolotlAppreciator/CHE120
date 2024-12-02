@@ -35,23 +35,26 @@ class moving_entity():
             pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
 
 class enemy():
-    def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
+    def __init__(self,x,y,width,height,maxDist, enemy_type = "moving", spritePath = None):
         self.rect = pygame.Rect(x,y,width,height)
         self.sprite = None
         self.type = enemy_type
-        self.velocity = 0
-        self.health = 0
-        originalX = x
+        self.accelerating = True
+        self.max_speed = 500
+        self.direction = 0
+        self.velocity = pygame.Vector2(0,0)
+        self.maxDist = maxDist
+        self.originalX = x
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite, (width+30, height))
             
-    def backAndForth(self,originalX,speed,delta_time):
+    def movementBehaviour(self,originalX,maxDist):
         print("moving")
-        if self.rect.x > originalX + 50:
-            self.rect.x += speed * delta_time
-        elif self.rect.x < originalX - 50:
-            self.rect.x -= speed * delta_time
+        if self.rect.x < originalX + maxDist:
+            self.direction = 1
+        elif self.rect.x > originalX - maxDist:
+            self.direction = -1
     def render(self, screen):
         if self.sprite:
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
@@ -194,7 +197,7 @@ def main():
 
     #placeholder enemy
     #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
-    enemy1 = enemy(200,300,50,75,10,spritePath = "images/enemy.png")
+    enemy1 = enemy(200,300,50,75,100,spritePath = "images/enemy.png")
     #List of active entities that get updated each frame
     activeEntities = [enemy1]
     gamestate = 1
@@ -246,11 +249,13 @@ def main():
             player.render(mainSurface)
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])  # Clear the screen
-            player.render(mainSurface)
             for obj in objects:
                 obj.render(mainSurface)
             for entity in activeEntities:
                 entity.render(mainSurface)
+                updateObjects(entity, delta_time, objects)
+                entity.movementBehaviour(entity.originalX, entity.maxDist)
+                
             pygame.display.flip()
             clock.tick(60)
 
