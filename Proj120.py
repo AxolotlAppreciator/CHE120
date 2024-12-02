@@ -104,7 +104,7 @@ class platform():
         platform_types = ["regular", 'breaking', 'moving']
         probabilities = [0.7, 0.2, 0.1]
 
-        previous_y = screen_height - platform_height
+        generation_y = 
         vertical_gap = 150
         
         for _ in range(num_platforms):
