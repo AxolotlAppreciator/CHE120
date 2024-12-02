@@ -288,8 +288,44 @@ def handle_collisions(self, objects):
             else:
                 self.grounded = False
                 
+def updateObjects(self, delta_time, objects):
+    if self.accelerating:
+        if abs(self.velocity.x) < self.max_speed:
+            self.velocity.x += self.direction * 15
+    else:
+        self.velocity.x *= self.deceleration_rate
+    
+    if self.rect.x < -70:
+        self.rect.x = 550
+    elif self.rect.x > 560:
+        self.rect.x = -60
+        #Updates horizontal position and checks for valid collision (x)
+    self.rect.x += self.velocity.x * delta_time
+    handle_collisions(self,objects)
 
 
+def updateY(self, delta_time, objects, entities):
+    # Apply gravity
+
+    # If not grounded, move objects based on the player's velocity
+    if not self.grounded:
+        vertical_offset = self.velocity.y * delta_time
+    else:
+        vertical_offset = 0
+    for obj in objects:
+        obj.rect.y -= vertical_offset
+    for entity in entities:
+        entity.rect.y -= vertical_offset
+
+
+
+def update_animation(self, delta_time):
+        if self.sprite_frames:
+            self.animation_timer += delta_time
+            if self.animation_timer > 0.1:  # adjust frame speed
+                self.current_frame = (self.current_frame + 1) % len(self.sprite_frames)
+                self.sprite = self.sprite_frames[self.current_frame]
+                self.animation_timer = 0
 
 def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
     keys = pygame.key.get_pressed()
@@ -337,46 +373,5 @@ def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
         player.mouse_held = False
        
     return bullets_group
-
-                        
-
-def updateObjects(self, delta_time, objects):
-    if self.accelerating:
-        if abs(self.velocity.x) < self.max_speed:
-            self.velocity.x += self.direction * 15
-    else:
-        self.velocity.x *= self.deceleration_rate
-    
-    if self.rect.x < -70:
-        self.rect.x = 550
-    elif self.rect.x > 560:
-        self.rect.x = -60
-        #Updates horizontal position and checks for valid collision (x)
-    self.rect.x += self.velocity.x * delta_time
-    handle_collisions(self,objects)
-
-
-def updateY(self, delta_time, objects, entities):
-    # Apply gravity
-
-    # If not grounded, move objects based on the player's velocity
-    if not self.grounded:
-        vertical_offset = self.velocity.y * delta_time
-    else:
-        vertical_offset = 0
-    for obj in objects:
-        obj.rect.y -= vertical_offset
-    for entity in entities:
-        entity.rect.y -= vertical_offset
-
-
-
-def update_animation(self, delta_time):
-        if self.sprite_frames:
-            self.animation_timer += delta_time
-            if self.animation_timer > 0.1:  # adjust frame speed
-                self.current_frame = (self.current_frame + 1) % len(self.sprite_frames)
-                self.sprite = self.sprite_frames[self.current_frame]
-                self.animation_timer = 0
                 
 main()
