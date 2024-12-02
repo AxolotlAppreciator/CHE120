@@ -119,8 +119,8 @@ def generate_platforms(objects, num_platforms, screen_width, screen_height):
         objects.append(new_platform)
         previous_y = y
 
-    def platform_generation_collision():
-        pass
+def platform_generation_collision():
+    pass
 
 def main():
     #-----------------------------Setup------------------------------------------------------#
@@ -137,6 +137,7 @@ def main():
     #-----------------------------Program Variable Initialization----------------------------#
 
 
+    font = pygame.font.Font(None, 36)
     player = moving_entity(300,300,100,150,200,0.85,"images\player.png")
     player.velocity.y = 497
 
@@ -149,6 +150,7 @@ def main():
     #List of active entities that get updated each frame
     activeEntities = []
     gamestate = 0
+    score = 0
 #     press start tp space
 #     either learn another way t hold downt he key or learn how to do both at the same
     #-----------------------------Main Program Loop---------------------------------------------#
@@ -158,7 +160,7 @@ def main():
         ev = pygame.event.poll()    # Look for any event
         if ev.type == pygame.QUIT:  # Window close button clicked?
             break
-        
+        mainSurface.fill((53, 80, 112))
         print(player.velocity.y)
         checkPlayerInput(player, delta_time, 200, objects)
         for obj in objects:
@@ -169,7 +171,10 @@ def main():
 
         updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
         updateObjects(player, delta_time, objects)           # Update X-axis movement
-        handle_collisions(player, objects)      
+        handle_collisions(player, objects)
+        score = score + 1
+        score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+        mainSurface.blit(score_text, (10, 10))      
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
 
@@ -179,14 +184,12 @@ def main():
         #-----------------------------Drawing Everything-------------------------------------#
         # We draw everything from scratch on each frame.
         # So first fill everything with the background color
-        mainSurface.fill((53, 80, 112))
         
 
         # Rendering and updating objects and entities ->
         player.render(mainSurface)
         #-----------------------------Program Logic---------------------------------------------#
-        # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
-        mainSurface.fill((53, 80, 112))  # Clear the screen
+        # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])  # Clear the screen
         player.render(mainSurface)
         for obj in objects:
             obj.render(mainSurface)
