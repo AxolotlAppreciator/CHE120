@@ -15,7 +15,7 @@ class moving_entity():
         self.acceleration = pygame.Vector2(0,0)
         self.deceleration_rate = deceleration_rate
         self.sprite = None
-        self.grounded = True
+        self.grounded = False
         self.accelerating = False
         self.direction = 0
         self.max_speed = max_speed
@@ -35,27 +35,37 @@ class moving_entity():
             pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
 
 class enemy():
-    def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
+    def __init__(self,x,y,width,height,maxDist, enemy_type = "moving", spritePath = None):
         self.rect = pygame.Rect(x,y,width,height)
         self.sprite = None
         self.type = enemy_type
-        self.velocity = 0
-        self.health = 0
-        originalX = x
+        self.accelerating = True
+        self.max_speed = 500
+        self.direction = 0
+        self.velocity = pygame.Vector2(0,0)
+        self.maxDist = maxDist
+        self.originalX = x
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite,(width,height))
 
-    def backAndForth(self,originalX,speed,delta_time):
-        if self.rect.x > originalX + 50:
-            self.rect.x += speed * delta_time
-        elif self.rect.x < originalX - 50:
-            self.rect.x -= speed * delta_time
+    def movementBehaviour(self,originalX,maxDist):
+        if self.rect.x < originalX + maxDist:
+            print("moving left")
+            self.direction = -1
+        elif self.rect.x > originalX - maxDist:
+            print("moving right")
+            self.direction = 1
 
+    def render(self, screen):
+        if self.sprite:
+            screen.blit(self.sprite, (self.rect.x, self.rect.y))
+        else:
+            pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
 
 # platform class
 class platform():
-    def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None):
+    def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None, speed = 0):
         self.rect = pygame.Rect(x ,y ,width,height)
         self.sprite = None
         self.type = platform_type
@@ -89,13 +99,17 @@ class platform():
         if self.type == "breaking" and self.active:
             self.active = False
 
+    def handle_breaking(self):
+        if self.timer is None:
+            self.timer = time.time()
+        elif time.time() - self.timer > 1.5: 
+            self.active = True
+
     def on_collision(self):
         if self.type == "breaking" and self.active:
-            if not self.timer:
-                self.timer = time.time()
-            elif time.time() - self.timer > 1.5:
-                self.break_platform()
-        
+            self.active = False
+            self.timer = time.time()
+
     def render(self, screen):
         colour = self.get_platform_colour() if self.active else (128, 128, 128) # grey = inactive
         if self.sprite:
@@ -107,35 +121,31 @@ class platform():
         if self.rect.top > screen_height:
             self.rect.x = random.randint(0, screen_width - self.rect.width)
             self.rect.y = random.randint(-100, -20)
+            self.active = True
+            self.timer = None
 
     def scroll(self, speed):
         self.rect.y += speed # move platform vertically
         if self.rect.y > 580: # if the platform goes of screen
             self.rect.y = -20 # reset to the top of the screen
 
-
+    # @staticmethod
     def generate_platforms(objects, num_platforms, screen_width, screen_height):
         platform_width = 100
         platform_height = 20
-
-        # the probabilities for each platform type
         platform_types = ["regular", 'breaking', 'moving']
         probabilities = [0.7, 0.2, 0.1]
-
         vertical_gap = 150
+        y_position = screen_height - 50
         
         for _ in range(num_platforms):
             x = random.randint(0, screen_width - platform_width)
-            y = previous_y - vertical_gap
-
-            if y < 0:
-                y = 0
-
+            y = y_position
             platform_type = random.choices(platform_types, probabilities)[0]
-            speed = random.randint(1, 3) if platform_type == "moving" else 0
+            speed = random.randint(50, 100) if platform_type == "moving" else 0
             new_platform = platform(x, y, platform_width, platform_height, platform_type, speed=speed)
             objects.append(new_platform)
-            previous_y = y
+            y_position -= vertical_gap
 
     def platform_generation_collision():
         pass
@@ -189,12 +199,15 @@ def main():
 
     #List of all active objects on the screen
     objects = []
+    platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
+    first_platform = platform(300,400,100,10) ## ivy has 600 for mac
+    objects.append(first_platform)
 
-    #PLACEHOLDER PLATFORM FOR THE PLAYER TO START ON
-    whoops_all_platforms = platform(300,600,100,10)
-    objects.append(whoops_all_platforms)
+    #placeholder enemy
+    #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
+    enemy1 = enemy(200,300,50,75,100,spritePath = "images/enemy.png")
     #List of active entities that get updated each frame
-    activeEntities = []
+    activeEntities = [enemy1]
     gamestate = 1
     score = 0
     bullets_group = pygame.sprite.Group()
@@ -205,7 +218,16 @@ def main():
         
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
-
+        if gamestate == 0:
+            ev = pygame.event.poll()    # Look for any event
+            if ev.type == pygame.QUIT:  # Window close button clicked?
+                break
+            if ev.type == pygame.KEYDOWN:
+                if ev.key == pygame.K_ESCAPE:
+                    break
+            mainSurface.fill((53, 80, 112))
+            logo_text = font.render('Chill Jump', True, (255, 255, 255))
+            mainSurface.blit(logo_text, (100, 100))
         if gamestate == 1:
             delta_time = clock.get_time() / 1000 # Time since last frame
             #-----------------------------Event Handling-----------------------------------------#
@@ -235,18 +257,32 @@ def main():
             score_text = font.render(f'Score: {score}', True, (255, 255, 255))
             mainSurface.blit(score_text, (10, 10))      
 
+           # for platform in objects:
+              #  if isinstance(platform, Platform):  
+                   # platform.update(surfaceSize, delta_time) 
+                   # platform.respawn(surfaceSize, surfaceSize)
+                  #  if player.rect.colliderect(platform.rect):
+                       # if platform.active:
+                          #  platform.on_collision()
+                          #  player.grounded = True
+                          #  player.rect.bottom = platform.rect.top
+
         #-----------------------------Drawing Everything-------------------------------------#
         # We draw everything from scratch on each frame.
         # So first fill everything with the background color
         
 
         # Rendering and updating objects and entities ->
-            player.render(mainSurface)
+            player.render(mainSurface) ## why is there two lol
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])  # Clear the screen
-            player.render(mainSurface)
             for obj in objects:
                 obj.render(mainSurface)
+            for entity in activeEntities:
+                entity.render(mainSurface)
+                updateObjects(entity, delta_time, objects)
+                entity.movementBehaviour(entity.originalX, entity.maxDist)
+                
             pygame.display.flip()
             clock.tick(60)
 
@@ -347,8 +383,10 @@ def updateY(self, delta_time, objects, entities):
     # Apply gravity
 
     # If not grounded, move objects based on the player's velocity
-
-    vertical_offset = self.velocity.y * delta_time
+    if not self.grounded:
+        vertical_offset = self.velocity.y * delta_time
+    else:
+        vertical_offset = 0
     for obj in objects:
         obj.rect.y -= vertical_offset
     for entity in entities:
