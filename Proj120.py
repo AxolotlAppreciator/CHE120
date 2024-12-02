@@ -129,7 +129,7 @@ class platform():
         if self.rect.y > 580: # if the platform goes of screen
             self.rect.y = -20 # reset to the top of the screen
 
-    #@staticmethod
+    @staticmethod
     def generate_platforms(objects, num_platforms, screen_width, screen_height):
         platform_width = 100
         platform_height = 20
@@ -190,9 +190,9 @@ def main():
 
     #List of all active objects on the screen
     objects = []
-   ## platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-  ##  first_platform = platform(300,600,100,10) ## ivy has 600 for mac
-   ## objects.append(first_platform)
+    platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
+    first_platform = platform(300,400,100,10) ## ivy has 600 for mac
+    objects.append(first_platform)
 
     #placeholder enemy
     #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
