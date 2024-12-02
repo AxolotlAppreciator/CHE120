@@ -19,6 +19,7 @@ class moving_entity():
         self.accelerating = False
         self.direction = 0
         self.max_speed = max_speed
+        self.mouse_held = False 
         # If there's a sprite path, load the sprite
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
@@ -270,6 +271,7 @@ def handle_collisions(self, objects):
 
 def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
     keys = pygame.key.get_pressed()
+    mouse_buttons = pygame.mouse.get_pressed()
     
     # Jump logic
     if (keys[pygame.K_UP] or keys[pygame.K_w]) and player.grounded:
@@ -302,9 +304,15 @@ def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
         direction_vector = pygame.Vector2(0, 0)
     
     # Shoot logic
-    if keys[pygame.K_SPACE]:  # Spacebar to shoot
-         bullet = Bullet(player.rect.centerx, player.rect.centery, direction_vector, 10)  # Create bullet
-         bullets_group.add(bullet)  # Add bullet to group
+    if mouse_buttons[0]:  # Left mouse button is pressed (clicked)
+        if not player.mouse_held:  # If it's the first click, fire a bullet
+            bullet = Bullet(player.rect.centerx, player.rect.centery, direction_vector, 10)  # Create a bullet
+            bullets_group.add(bullet)  # Add bullet to the group
+            player.mouse_held = True  # Set the flag to prevent continuous firing while the button is held down
+
+    # If mouse button is released, reset the flag (allow the next shot on next click)
+    if not mouse_buttons[0]:
+        player.mouse_held = False
        
     return bullets_group
 
