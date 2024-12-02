@@ -95,32 +95,32 @@ class platform():
             self.rect.y = -20 # reset to the top of the screen
 
 
-def generate_platforms(objects, num_platforms, screen_width, screen_height):
-    platform_width = 100
-    platform_height = 20
+    def generate_platforms(objects, num_platforms, screen_width, screen_height):
+        platform_width = 100
+        platform_height = 20
 
-    # the probabilities for each platform type
-    platform_types = ["regular", 'breaking', 'moving']
-    probabilities = [0.7, 0.2, 0.1]
+        # the probabilities for each platform type
+        platform_types = ["regular", 'breaking', 'moving']
+        probabilities = [0.7, 0.2, 0.1]
 
-    previous_y = screen_height - platform_height
-    vertical_gap = 100
-    
-    for _ in range(num_platforms):
-        x = random.randint(0, screen_width - platform_width)
-        y = previous_y - vertical_gap
+        previous_y = screen_height - platform_height
+        vertical_gap = 100
+        
+        for _ in range(num_platforms):
+            x = random.randint(0, screen_width - platform_width)
+            y = previous_y - vertical_gap
 
-        if y < 0:
-            y = 0
+            if y < 0:
+                y = 0
 
-        platform_type = random.choices(platform_types, probabilities)[0]
-        speed = random.randint(1, 3) if platform_type == "moving" else 0
-        new_platform = platform(x, y, platform_width, platform_height, platform_type, speed=speed)
-        objects.append(new_platform)
-        previous_y = y
+            platform_type = random.choices(platform_types, probabilities)[0]
+            speed = random.randint(1, 3) if platform_type == "moving" else 0
+            new_platform = platform(x, y, platform_width, platform_height, platform_type, speed=speed)
+            objects.append(new_platform)
+            previous_y = y
 
-def platform_generation_collision():
-    pass
+    def platform_generation_collision():
+        pass
 
 def main():
     #-----------------------------Setup------------------------------------------------------#
