@@ -225,11 +225,11 @@ def main():
                 bullet.update(objects)
             #print(player.velocity.y)
             checkPlayerInput(player, delta_time, 200, objects, bullets_group)
-            for obj in objects:
-                if player.rect.y > obj.rect.y + 60:
-                    player.rect.y += 500 * delta_time
-                else:
-                    player.rect.y = 300
+            #for obj in objects:
+            #    if player.rect.y > obj.rect.y + 60:
+            #        player.rect.y += 500 * delta_time
+            #    else:
+            #        player.rect.y = 300
             bullets_group.draw(mainSurface)  # Draw all bullets
 
             updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
@@ -280,18 +280,11 @@ def render(object, screen):
 def handle_collisions(self, objects):
     for obj in objects:
         if self.rect.colliderect(obj.rect):
-            # Horizontal adjustment
-            #if self.rect.right > obj.rect.left and self.rect.left < obj.rect.left:
-            #    self.rect.right = obj.rect.left  # Push out from the left
-            #elif self.rect.left < obj.rect.right and self.rect.right > obj.rect.right:
-            #    self.rect.left = obj.rect.right  # Push out from the right
-
-        # Vertical adjustment
-            if self.rect.bottom > obj.rect.top:
+            # Check if the object is landing on top of the platform
+            if self.velocity.y > 0 and self.rect.bottom >= obj.rect.top:
+                obj.rect.top = self.rect.bottom  # Snap to the top of the platform
                 self.grounded = True
-            elif self.rect.top < obj.rect.bottom and self.rect.bottom > obj.rect.bottom:
-                self.rect.top = obj.rect.bottom  # Push out from the bottom
-                self.groudned = False
+                self.velocity.y = 0  # Reset vertical velocity when landing
             else:
                 self.grounded = False
                 
