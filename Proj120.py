@@ -169,6 +169,107 @@ class Bullet(pygame.sprite.Sprite):
         if not self.rect.colliderect(pygame.Rect(0, 0, pygame.display.get_surface().get_width(), pygame.display.get_surface().get_height())):
             self.kill()  # Remove the bullet from the sprite group
     
+def main():
+    #-----------------------------Setup------------------------------------------------------#
+    """ Set up the game and run the main game loop """
+    pygame.init()      # Prepare the pygame module for use
+    surfaceSize = 580   # Desired physical surface size, in pixels.
+
+
+    clock = pygame.time.Clock()
+    # Create surface of (width, height), and its window.
+    mainSurface = pygame.display.set_mode((surfaceSize, surfaceSize))
+    
+#     add if it falls behind it get fucked!! and lose
+    #-----------------------------Program Variable Initialization----------------------------#
+
+
+    font = pygame.font.Font(None, 36)
+    player = moving_entity(300,550,75,100,200,0.85,"images/player.png")
+    player.velocity.y = 497
+
+    #List of all active objects on the screen
+    objects = []
+    Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
+    first_platform = Platform(300,600,100,10) ## ivy has 600 for mac
+    objects.append(first_platform)
+
+    #placeholder enemy
+    #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
+    enemy1 = enemy(200,300,50,75,100,spritePath = "images/enemy.png")
+    #List of active entities that get updated each frame
+    activeEntities = [enemy1]
+    gamestate = 1
+    score = 0
+    bullets_group = pygame.sprite.Group()
+
+
+    #-----------------------------Main Program Loop---------------------------------------------#
+    while True:
+        
+        #-----------------------------Program Logic---------------------------------------------#
+        # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
+    
+        if gamestate == 1:
+            delta_time = clock.get_time() / 1000 # Time since last frame
+            #-----------------------------Event Handling-----------------------------------------#
+            ev = pygame.event.poll()    # Look for any event
+            if ev.type == pygame.QUIT:  # Window close button clicked?
+                break
+            if ev.type == pygame.KEYDOWN:
+                if ev.key == pygame.K_ESCAPE:
+                    break
+            mainSurface.fill((53, 80, 112))
+            bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
+            for bullet in bullets_group:
+                bullet.update(objects)
+            #print(player.velocity.y)
+            checkPlayerInput(player, delta_time, 200, objects, bullets_group)
+            #for obj in objects:
+            #    if player.rect.y > obj.rect.y + 60:
+            #        player.rect.y += 500 * delta_time
+            #    else:
+            #        player.rect.y = 300
+            bullets_group.draw(mainSurface)  # Draw all bullets
+
+            updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
+            updateObjects(player, delta_time, objects)           # Update X-axis movement
+            handle_collisions(player, objects)
+            score = score + 1
+            score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+            mainSurface.blit(score_text, (10, 10))      
+
+           # for platform in objects:
+              #  if isinstance(platform, Platform):  
+                   # platform.update(surfaceSize, delta_time) 
+                   # platform.respawn(surfaceSize, surfaceSize)
+                  #  if player.rect.colliderect(platform.rect):
+                       # if platform.active:
+                         #   platform.on_collision()
+                          #  player.grounded = True
+                          #  player.rect.bottom = platform.rect.top
+
+        #-----------------------------Drawing Everything-------------------------------------#
+        # We draw everything from scratch on each frame.
+        # So first fill everything with the background color
+        
+
+        # Rendering and updating objects and entities ->
+            player.render(mainSurface) ## why is there two lol
+        #-----------------------------Program Logic---------------------------------------------#
+        # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])  # Clear the screen
+            for obj in objects:
+                obj.render(mainSurface)
+            for entity in activeEntities:
+                entity.render(mainSurface)
+                updateObjects(entity, delta_time, objects)
+                entity.movementBehaviour(entity.originalX, entity.maxDist)
+                
+            pygame.display.flip()
+            clock.tick(60)
+
+    pygame.quit()     # Once we leave the loop, close the window.
+
 
 def render(object, screen):
     if object.sprite:
@@ -277,106 +378,5 @@ def update_animation(self, delta_time):
                 self.current_frame = (self.current_frame + 1) % len(self.sprite_frames)
                 self.sprite = self.sprite_frames[self.current_frame]
                 self.animation_timer = 0
-
-def main():
-    #-----------------------------Setup------------------------------------------------------#
-    """ Set up the game and run the main game loop """
-    pygame.init()      # Prepare the pygame module for use
-    surfaceSize = 580   # Desired physical surface size, in pixels.
-
-
-    clock = pygame.time.Clock()
-    # Create surface of (width, height), and its window.
-    mainSurface = pygame.display.set_mode((surfaceSize, surfaceSize))
-    
-#     add if it falls behind it get fucked!! and lose
-    #-----------------------------Program Variable Initialization----------------------------#
-
-
-    font = pygame.font.Font(None, 36)
-    player = moving_entity(300,550,75,100,200,0.85,"images/player.png")
-    player.velocity.y = 497
-
-    #List of all active objects on the screen
-    objects = []
-    Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-    first_platform = Platform(300,600,100,10) ## ivy has 600 for mac
-    objects.append(first_platform)
-
-    #placeholder enemy
-    #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
-    enemy1 = enemy(200,300,50,75,100,spritePath = "images/enemy.png")
-    #List of active entities that get updated each frame
-    activeEntities = [enemy1]
-    gamestate = 1
-    score = 0
-    bullets_group = pygame.sprite.Group()
-
-
-    #-----------------------------Main Program Loop---------------------------------------------#
-    while True:
-        
-        #-----------------------------Program Logic---------------------------------------------#
-        # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
-    
-        if gamestate == 1:
-            delta_time = clock.get_time() / 1000 # Time since last frame
-            #-----------------------------Event Handling-----------------------------------------#
-            ev = pygame.event.poll()    # Look for any event
-            if ev.type == pygame.QUIT:  # Window close button clicked?
-                break
-            if ev.type == pygame.KEYDOWN:
-                if ev.key == pygame.K_ESCAPE:
-                    break
-            mainSurface.fill((53, 80, 112))
-            bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
-            for bullet in bullets_group:
-                bullet.update(objects)
-            #print(player.velocity.y)
-            checkPlayerInput(player, delta_time, 200, objects, bullets_group)
-            #for obj in objects:
-            #    if player.rect.y > obj.rect.y + 60:
-            #        player.rect.y += 500 * delta_time
-            #    else:
-            #        player.rect.y = 300
-            bullets_group.draw(mainSurface)  # Draw all bullets
-
-            updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
-            updateObjects(player, delta_time, objects)           # Update X-axis movement
-            handle_collisions(player, objects)
-            score = score + 1
-            score_text = font.render(f'Score: {score}', True, (255, 255, 255))
-            mainSurface.blit(score_text, (10, 10))      
-
-           # for platform in objects:
-              #  if isinstance(platform, Platform):  
-                   # platform.update(surfaceSize, delta_time) 
-                   # platform.respawn(surfaceSize, surfaceSize)
-                  #  if player.rect.colliderect(platform.rect):
-                       # if platform.active:
-                         #   platform.on_collision()
-                          #  player.grounded = True
-                          #  player.rect.bottom = platform.rect.top
-
-        #-----------------------------Drawing Everything-------------------------------------#
-        # We draw everything from scratch on each frame.
-        # So first fill everything with the background color
-        
-
-        # Rendering and updating objects and entities ->
-            player.render(mainSurface) ## why is there two lol
-        #-----------------------------Program Logic---------------------------------------------#
-        # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])  # Clear the screen
-            for obj in objects:
-                obj.render(mainSurface)
-            for entity in activeEntities:
-                entity.render(mainSurface)
-                updateObjects(entity, delta_time, objects)
-                entity.movementBehaviour(entity.originalX, entity.maxDist)
-                
-            pygame.display.flip()
-            clock.tick(60)
-
-    pygame.quit()     # Once we leave the loop, close the window.
                 
 main()
