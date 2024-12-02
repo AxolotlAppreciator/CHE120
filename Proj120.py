@@ -160,8 +160,11 @@ def main():
         ev = pygame.event.poll()    # Look for any event
         if ev.type == pygame.QUIT:  # Window close button clicked?
             break
+        if ev.type == pygame.KEYDOWN:
+            if ev.key == pygame.K_ESCAPE:
+                break
         mainSurface.fill((53, 80, 112))
-        print(player.velocity.y)
+        #print(player.velocity.y)
         checkPlayerInput(player, delta_time, 200, objects)
         for obj in objects:
             if player.rect.y > obj.rect.y + 60:
