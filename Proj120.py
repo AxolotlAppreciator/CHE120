@@ -53,7 +53,6 @@ class enemy():
         elif self.rect.x < originalX - 50:
             self.rect.x -= speed * delta_time
     def render(self, screen):
-        print("rendering enemy")
         if self.sprite:
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
         else:
@@ -195,9 +194,9 @@ def main():
 
     #placeholder enemy
     #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
-    enemy1 = enemy(200,200,50,75,10,spritePath = "/images/enemy.png")
+    enemy1 = enemy(200,200,50,75,10,spritePath = "images/enemy.png")
     #List of active entities that get updated each frame
-    activeEntities = []
+    activeEntities = [enemy1]
     gamestate = 1
     score = 0
     bullets_group = pygame.sprite.Group()
@@ -250,6 +249,8 @@ def main():
             player.render(mainSurface)
             for obj in objects:
                 obj.render(mainSurface)
+            for entity in activeEntities:
+                entity.render(mainSurface)
             pygame.display.flip()
             clock.tick(60)
 
@@ -290,7 +291,7 @@ def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
         player.velocity.y = -800  # Adjust jump strength
         player.grounded = False  # Set player as airborne
     if not player.grounded:
-     player.velocity.y += 1300 * delta_time
+     player.velocity.y += 1800 * delta_time
         
     # Horizontal movement logic
     if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -351,7 +352,10 @@ def updateY(self, delta_time, objects, entities):
 
     # If not grounded, move objects based on the player's velocity
 
-    vertical_offset = self.velocity.y * delta_time
+    if not self.grounded:
+        vertical_offset = self.velocity.y * delta_time
+    else:
+        vertical_offset = 0
     for obj in objects:
         obj.rect.y -= vertical_offset
     for entity in entities:
