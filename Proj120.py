@@ -51,10 +51,8 @@ class enemy():
 
     def movementBehaviour(self,originalX,maxDist):
         if self.rect.x < originalX + maxDist:
-            print("moving left")
             self.direction = -1
         elif self.rect.x > originalX - maxDist:
-            print("moving right")
             self.direction = 1
 
     def render(self, screen):
@@ -305,10 +303,13 @@ def handle_collisions(self, objects):
             #    self.rect.left = obj.rect.right  # Push out from the right
 
         # Vertical adjustment
-            if self.rect.bottom > obj.rect.top + 10:
+            if self.rect.bottom > obj.rect.top:
                 self.grounded = True
             elif self.rect.top < obj.rect.bottom and self.rect.bottom > obj.rect.bottom:
-                self.rect.bottom = obj.rect.top  # Push out from the bottom
+                self.rect.top = obj.rect.bottom  # Push out from the bottom
+                self.groudned = False
+            else:
+                self.grounded = False
                 
 
 
@@ -319,7 +320,7 @@ def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
     
     # Jump logic
     if (keys[pygame.K_UP] or keys[pygame.K_w]) and player.grounded:
-        player.velocity.y = -800  # Adjust jump strength
+        player.velocity.y = -1200  # Adjust jump strength
         player.grounded = False  # Set player as airborne
     if not player.grounded:
      player.velocity.y += 1300 * delta_time
