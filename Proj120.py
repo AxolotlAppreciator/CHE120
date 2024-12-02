@@ -124,10 +124,10 @@ class platform():
             self.active = True
             self.timer = None
 
-    def scroll(self, speed):
-        self.rect.y += speed # move platform vertically
-        if self.rect.y > 580: # if the platform goes of screen
-            self.rect.y = -20 # reset to the top of the screen
+    ##def scroll(self, speed):
+     ##   self.rect.y += speed # move platform vertically
+      ##  if self.rect.y > 580: # if the platform goes of screen
+       ##     self.rect.y = -20 # reset to the top of the screen
 
     # @staticmethod
     def generate_platforms(objects, num_platforms, screen_width, screen_height):
