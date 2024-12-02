@@ -2,6 +2,7 @@
 import pygame
 import random
 import time
+import math
 
 pygame.display.set_caption("Chill Jump")
 ## font = pygame.font.SysFont(None,25) ## change to comic sans and pick sizing and whatnot
@@ -41,7 +42,7 @@ class enemy():
         self.health = 0
         originalX = x
         if spritePath:
-            self.sprite = pygame.image.load(spritePath).convert_alpha
+            self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite,(width,height))
 
     def backAndForth(self,originalX,speed,delta_time):
@@ -138,6 +139,25 @@ class platform():
     def platform_generation_collision():
         pass
 
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, x, y, direction, speed):
+        super().__init__()
+        self.image = pygame.Surface((10, 5))  
+        self.image.fill((255, 0, 0))  
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.direction = direction
+        self.speed = speed
+
+    def update(self):
+        # Move bullet in the direction of  vector
+        self.rect.x += self.direction.x * self.speed
+        self.rect.y += self.direction.y * self.speed
+
+        # Kill bullet if the bullet goes off-screen
+        if not self.rect.colliderect(pygame.Rect(0, 0, pygame.display.get_surface().get_width(), pygame.display.get_surface().get_height())):
+            self.kill()  # Remove the bullet from the sprite group
+
 def main():
     #-----------------------------Setup------------------------------------------------------#
     """ Set up the game and run the main game loop """
@@ -161,12 +181,14 @@ def main():
     objects = []
 
     #PLACEHOLDER PLATFORM FOR THE PLAYER TO START ON
-    whoops_all_platforms = platform(300,350,100,10)
+    whoops_all_platforms = platform(300,600,100,10)
     objects.append(whoops_all_platforms)
     #List of active entities that get updated each frame
     activeEntities = []
     gamestate = 1
     score = 0
+    bullets_group = pygame.sprite.Group()
+
 
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
@@ -184,14 +206,17 @@ def main():
                 if ev.key == pygame.K_ESCAPE:
                     break
             mainSurface.fill((53, 80, 112))
+            bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
+            bullets_group.update()
+
             #print(player.velocity.y)
-            checkPlayerInput(player, delta_time, 200, objects)
+            checkPlayerInput(player, delta_time, 200, objects, bullets_group)
             for obj in objects:
                 if player.rect.y > obj.rect.y + 60:
-                    # player.rect.y += 500 * delta_time
-                    pass
+                    player.rect.y += 500 * delta_time
                 else:
                     player.rect.y = 300
+            bullets_group.draw(mainSurface)  # Draw all bullets
 
             updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
             updateObjects(player, delta_time, objects)           # Update X-axis movement
@@ -243,7 +268,7 @@ def handle_collisions(self, objects):
 
 
 
-def checkPlayerInput(player, delta_time, player_speed, objects):
+def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
     keys = pygame.key.get_pressed()
     
     # Jump logic
@@ -264,6 +289,24 @@ def checkPlayerInput(player, delta_time, player_speed, objects):
         player.sprite = pygame.transform.flip(player.sprite_left, True, False)  # Flip sprite back to the right
     else:
         player.accelerating = False
+    
+    # Mouse direction calculations
+    mouse_x, mouse_y = pygame.mouse.get_pos()  # Get mouse position on screen
+    dx = mouse_x - player.rect.centerx 
+    dy = mouse_y - player.rect.centery
+    distance = math.hypot(dx, dy) # Distance from player to mouse
+    
+    if distance != 0:  # Avoid division by zero
+        direction_vector = pygame.Vector2(dx, dy).normalize()
+    else:
+        direction_vector = pygame.Vector2(0, 0)
+    
+    # Shoot logic
+    if keys[pygame.K_SPACE]:  # Spacebar to shoot
+         bullet = Bullet(player.rect.centerx, player.rect.centery, direction_vector, 10)  # Create bullet
+         bullets_group.add(bullet)  # Add bullet to group
+       
+    return bullets_group
 
                         
 
