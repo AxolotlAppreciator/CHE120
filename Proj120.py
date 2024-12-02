@@ -39,9 +39,16 @@ class enemy():
         self.type = enemy_type
         self.velocity = 0
         self.health = 0
+        originalX = x
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha
             self.sprite = pygame.transform.scale(self.sprite,(width,height))
+
+    def backAndForth(self,originalX,speed,delta_time):
+        if self.rect.x > originalX + 50:
+            self.rect.x += speed * delta_time
+        elif self.rect.x < originalX - 50:
+            self.rect.x -= speed * delta_time
 
 
 # platform class
@@ -113,7 +120,6 @@ class platform():
         platform_types = ["regular", 'breaking', 'moving']
         probabilities = [0.7, 0.2, 0.1]
 
-        generation_y = 
         vertical_gap = 150
         
         for _ in range(num_platforms):
