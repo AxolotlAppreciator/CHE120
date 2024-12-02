@@ -208,7 +208,16 @@ def main():
         
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
-    
+        if gamestate == 0:
+            ev = pygame.event.poll()    # Look for any event
+            if ev.type == pygame.QUIT:  # Window close button clicked?
+                break
+            if ev.type == pygame.KEYDOWN:
+                if ev.key == pygame.K_ESCAPE:
+                    break
+            mainSurface.fill((53, 80, 112))
+            logo_text = font.render('Chill Jump', True, (255, 255, 255))
+            mainSurface.blit(logo_text, (100, 100))
         if gamestate == 1:
             delta_time = clock.get_time() / 1000 # Time since last frame
             #-----------------------------Event Handling-----------------------------------------#
