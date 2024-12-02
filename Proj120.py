@@ -104,7 +104,7 @@ class platform():
         probabilities = [0.7, 0.2, 0.1]
 
         previous_y = screen_height - platform_height
-        vertical_gap = 100
+        vertical_gap = 150
         
         for _ in range(num_platforms):
             x = random.randint(0, screen_width - platform_width)
