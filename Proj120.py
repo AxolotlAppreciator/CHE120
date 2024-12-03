@@ -71,6 +71,14 @@ class enemy():
         self.maxDist = maxDist
         self.originalX = x
         self.theta = 0
+
+        if enemy_type == "moving":
+            spritePath = "images/enemy.png"
+        elif enemy_type == "spinning":
+            spritePath = "images/enemySpinning.png"
+        elif enemy_type == "following":
+            spritePath = "images/enemyChasing.png"
+
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite,(width+40,height))
