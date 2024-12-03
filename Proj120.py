@@ -69,19 +69,31 @@ class enemy():
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
         else:
             pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
+    
+    def respawn(self, screen_width, vertical_gap, highest_y):
+        self.rect.x = random.randint(0, screen_width - self.rect.width)
+        self.rect.y = highest_y - vertical_gap
+        movement_types = ["moving", "spinning"]
+        probabilities = [0.7, 0.3]
+        self.type = random.choices(movement_types, probabilities)[0]
+        self.velocity = pygame.Vector2(0, 0) if self.type != "moving" else random.randint(1, 5) * random.choice([-1, 1])
+        self.active = True
+        self.timer = 0
+        self.maxDist = random.randint(100, 300)
 
     def update(self, delta_time):
         self.movementBehaviour(self.originalX, self.maxDist, delta_time)
 
 # platform class
 class Platform():
-    def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None):
+    def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None, first = False):
         self.rect = pygame.Rect(x ,y ,width,height)
         self.sprite = None
         self.type = platform_type
         self.speed = 0 if platform_type != "moving" else random.randint(1, 3)
         self.timer = 0 # timer for breaking platforms
         self.active = True # breaking platforms will deactivate after breaking
+        self.first = first
 
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
@@ -89,7 +101,7 @@ class Platform():
 
     def get_platform_colour(self):
         if self.type == "regular":
-            return (45, 94, 52)  # Green for regular
+            return (0, 255, 0)  # Green for regular
         elif self.type == "breaking":
             return (255, 0, 0)  # Red for breakable
         elif self.type == "moving":
@@ -140,14 +152,13 @@ class Platform():
         self.timer = 0
         vertical_gap = 175
 
-
-    def generate_platforms(objects, num_platforms, screen_width):
+    def generate_platforms(objects, num_platforms, screen_width, screen_height):
         platform_width = 100
         platform_height = 20
         platform_types = ["regular", 'breaking', 'moving']
         probabilities = [0.7, 0.2, 0.1]
         vertical_gap = 175
-        y_position = 600
+        y_position = 400
         
         for _ in range(num_platforms):
             x = random.randint(0, screen_width - platform_width)
@@ -200,7 +211,10 @@ def main():
 
     #List of all active objects on the screen
     objects = []
-    Platform.generate_platforms(objects, 10, surfaceSize)
+    active_entities = []
+    Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
+    first_platform = Platform(300, 600, 100, 20)  # "regular", spritePath = None, speed = 0, first=True
+    objects.append(first_platform)
 
     #placeholder enemy
     #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
@@ -257,16 +271,10 @@ def main():
                     obj.render(mainSurface)    
                     if obj.rect.y > 1400:
                         Platform.respawn(obj, surfaceSize, 175, highest_y) 
-                        if random.random() < 0.25 + score / 10000:
-                            print("trying to spawn a new enemy")
-                            respawn(surfaceSize, 175, highest_y,activeEntities)
-                        if score > 5000:
-                           respawn(surfaceSize, 175, highest_y,activeEntities)
-
-
             for obj in objects:
                 obj.render(mainSurface)
                 if obj.type == "breaking" and obj.timer != 0:
+                    print(obj.timer)
                     obj.timer -= delta_time
                     if obj.timer <= 0:
                         Platform.respawn(obj, surfaceSize, 175, highest_y)
@@ -303,31 +311,6 @@ def checkBullet(self,bullet,player,enemylist):
     for bul in bullet:
         if self.rect.colliderect(bul.rect):
             enemylist.remove(self)
-
-
-
-def respawn(screen_width, vertical_gap, highest_y,activeEntities):
-        #enemy2 = enemy(200,300,50,75,100,spritePath = "images/enemy.png",enemy_type="spinning")
-        movement_types = ["moving", "spinning"]
-        probabilities = [0.7, 0.3]
-        typez = random.choices(movement_types, probabilities)[0]
-        xpos = random.randint(0, screen_width)
-        ypos = highest_y - vertical_gap
-        wid = 50
-        hei = 70
-        mDist = 100
-        en = enemy(xpos,ypos,wid,hei,mDist,spritePath = "images/enemy.png",enemy_type = typez)
-        activeEntities.append(en)
-        #self.rect.x = random.randint(0, screen_width - self.rect.width)
-       # self.rect.y = highest_y - vertical_gap
-        #movement_types = ["moving", "spinning"]
-        #probabilities = [0.7, 0.3]
-        #self.type = random.choices(movement_types, probabilities)[0]
-        #self.velocity = pygame.Vector2(0, 0) if self.type != "moving" else random.randint(1, 5) * random.choice([-1, 1])
-        #self.active = True
-        #self.timer = 0
-        #self.maxDist = random.randint(100, 300)
-        #print(f"respawning enemy with type{self.type}")
 def render(object, screen):
     if object.sprite:
         screen.blit(object.sprite, (object.rect.x, object.rect.y))
@@ -351,6 +334,7 @@ def handle_collisions(self, objects):
                     if obj.type == "breaking":
                         print("starting breakage")
                         obj.timer = 1.5
+                        print(obj.timer)
     if self.lastTouched:
         if self.lastTouched.left > self.rect.right:
             self.grounded = False
@@ -380,6 +364,9 @@ def updateY(self, delta_time, objects, entities):
         vertical_offset = self.velocity.y * delta_time
     else:
         vertical_offset = 0
+    for obj in objects:
+        if not obj.first:
+            obj.rect.y -= vertical_offset
     for entity in entities:
         entity.rect.y -= vertical_offset
 
