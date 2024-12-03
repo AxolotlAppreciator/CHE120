@@ -216,6 +216,7 @@ def draw_main_menu(screen, image, font1, font2):
     return start_button_rect
 
 def end_screen(screen, image, font1, font2):
+    pass
 
 def main():
     #-----------------------------Setup------------------------------------------------------#
