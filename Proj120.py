@@ -134,12 +134,6 @@ class Platform():
         self.timer = None
         vertical_gap = 175
 
-   # def scroll(self, speed):
-       # self.rect.y += speed # move platform vertically
-      #  if self.rect.y > 580: # if the platform goes of screen
-       #     self.rect.y = -20 # reset to the top of the screen
-
-    # @staticmethod
     def generate_platforms(objects, num_platforms, screen_width, screen_height):
         platform_width = 100
         platform_height = 20
