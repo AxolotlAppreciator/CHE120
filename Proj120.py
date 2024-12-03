@@ -246,7 +246,7 @@ def main():
             highest_y = min(obj.rect.y for obj in objects if isinstance(obj, Platform))
             for obj in objects:
                 if isinstance(obj, Platform):
-                    if obj.rect.y > 1000:
+                    if obj.rect.y > 1500:
                         Platform.respawn(obj, surfaceSize, 175, highest_y)
 
             for obj in objects:
