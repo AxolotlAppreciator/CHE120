@@ -22,6 +22,7 @@ class moving_entity():
         self.mouse_held = False 
         self.dead = False
         self.lastTouched = None
+        self.type = None
         # If there's a sprite path, load the sprite
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
@@ -29,30 +30,12 @@ class moving_entity():
 
         # Create a flipped version of the sprite for facing left
         self.sprite_left = pygame.transform.flip(self.sprite, True, False)  # Flip horizontally
+    
     def render(self, screen):
         if self.sprite:
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
         else:
-            pygame.draw.rect(screen, (0, 255, 0), self.rect)
-
-def render_text(text, font, color, position, screen):
-    rendered_text = font.render(text, True, color)
-    screen.blit(rendered_text, position)
-
-def draw_menu(screen, font):
-    screen.fill((53, 80, 112))  # Set background color
-    render_text("Chill Jump", font, (255, 255, 255), (200, 150), screen)  # Title
-    render_text("Press SPACE to Start", font, (255, 255, 255), (180, 250), screen)  # Instructions
-    render_text("Press ESC to Quit", font, (255, 255, 255), (180, 300), screen)  # Instructions
-    pygame.display.update()
-
-def draw_death_screen(screen, font, score):
-    screen.fill((53, 80, 112))  # Set background color
-    render_text("Game Over", font, (255, 0, 0), (200, 150), screen)  # Game Over message
-    render_text(f"Score: {score}", font, (255, 255, 255), (220, 200), screen)  # Score
-    render_text("Press SPACE to Restart", font, (255, 255, 255), (160, 250), screen)  # Restart instruction
-    render_text("Press ESC to Quit", font, (255, 255, 255), (180, 300), screen)  # Quit instruction
-    pygame.display.update()
+            pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
 
 class enemy():
     def __init__(self,x,y,width,height,maxDist, enemy_type = "moving", spritePath = None):
@@ -87,6 +70,19 @@ class enemy():
         else:
             pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
     
+    def respawn(self, screen_width, vertical_gap, highest_y):
+        self.rect.x = random.randint(0, screen_width - self.rect.width)
+        self.rect.y = highest_y - vertical_gap
+        movement_types = ["moving", "spinning"]
+        probabilities = [0.7, 0.3]
+        self.type = random.choices(movement_types, probabilities)[0]
+        self.velocity = pygame.Vector2(0, 0) if self.type != "moving" else random.randint(1, 5) * random.choice([-1, 1])
+        self.active = True
+        self.timer = 0
+        self.maxDist = random.randint(100, 300)
+
+    def update(self, delta_time):
+        self.movementBehaviour(self.originalX, self.maxDist, delta_time)
 
 # platform class
 class Platform():
@@ -214,10 +210,27 @@ def main():
 #     add if it falls behind it get fucked!! and lose
     #-----------------------------Program Variable Initialization----------------------------#
 
-    gamestate = 0
-    font = pygame.font.Font(None, 36)
-    clouds = pygame.image.load('images/clouds.png')
 
+    font = pygame.font.Font(None, 36)
+    player = moving_entity(300,375,75,100,290,0.85,"images/player.png")
+    player.velocity.y = 497
+
+    #List of all active objects on the screen
+    objects = []
+    Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
+    first_platform = Platform(300, 600, 100, 20)  # "regular", spritePath = None, speed = 0, first=True
+    objects.append(first_platform)
+
+    #placeholder enemy
+    #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
+    enemy1 = enemy(200,300,50,75,100,spritePath = "images/enemy.png")
+    enemy2 = enemy(200,300,50,75,100,spritePath = "images/enemy.png",enemy_type="spinning")
+
+    #List of active entities that get updated each frame
+    activeEntities = [enemy1,enemy2]
+    gamestate = 1
+    score = 0
+    bullets_group = pygame.sprite.Group()
 
 
     #-----------------------------Main Program Loop---------------------------------------------#
@@ -225,116 +238,79 @@ def main():
         
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
-        ev = pygame.event.poll()
-        if ev.type == pygame.QUIT:
-            pygame.quit()
-            break
-        if gamestate == 0:
-            draw_menu(mainSurface, font)
-            mainSurface.fill((53, 80, 112))
-            mainSurface.blit(clouds, (0, 0))  
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_SPACE]:
-                gamestate = 1  # Start the game when Space is pressed
-            elif keys[pygame.K_ESCAPE]:
-                pygame.quit()
+    
+        if gamestate == 1:
+            delta_time = clock.get_time() / 1000 # Time since last frame
+            #-----------------------------Event Handling-----------------------------------------#
+            ev = pygame.event.poll()    # Look for any event
+            if ev.type == pygame.QUIT:  # Window close button clicked?
                 break
-        
-        elif gamestate == 1:
-                
-            player = moving_entity(300,375,75,100,290,0.85,"images/player.png")
-            player.velocity.y = 497
-
-            #List of all active objects on the screen
-            objects = []
-            Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-            first_platform = Platform(300, 600, 100, 20)  # "regular", spritePath = None, speed = 0, first=True
-            objects.append(first_platform)
-
-            #placeholder enemy
-            #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
-            enemy1 = enemy(200,300,50,75,100,spritePath = "images/enemy.png")
-            enemy2 = enemy(200,300,50,75,100,spritePath = "images/enemy.png",enemy_type="spinning")
-
-            #List of active entities that get updated each frame
-            activeEntities = [enemy1,enemy2]
-            score = 0
-            bullets_group = pygame.sprite.Group()
-            while(gamestate == 1):
-                delta_time = clock.get_time() / 1000 # Time since last frame
-                #-----------------------------Event Handling-----------------------------------------#
-                ev = pygame.event.poll()    # Look for any event
-                if ev.type == pygame.QUIT:  # Window close button clicked?
+            if ev.type == pygame.KEYDOWN:
+                if ev.key == pygame.K_ESCAPE:
                     break
-                if ev.type == pygame.KEYDOWN:
-                    if ev.key == pygame.K_ESCAPE:
-                        gamestate = 0
-                        break
-                mainSurface.fill((53, 80, 112))
-                mainSurface.blit(clouds, (0, 0)) 
-                bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
-                for bullet in bullets_group:
-                    bullet.update(objects)
-                #print(player.velocity.y)
-                checkPlayerInput(player, delta_time, 200, objects, bullets_group)
-                #for obj in objects:
-                #    if player.rect.y > obj.rect.y + 60:
-                #        player.rect.y += 500 * delta_time
-                #    else:
-                #        player.rect.y = 300
-                bullets_group.draw(mainSurface)  # Draw all bullets
-                if player.dead == True:
-                    gamestate = 2
-                updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
-                updateObjects(player, delta_time, objects)           # Update X-axis movement
-                handle_collisions(player, objects)
-                score = score + 1
-                score_text = font.render(f'Score: {score}', True, (255, 255, 255))
-                mainSurface.blit(score_text, (10, 10))  
+            mainSurface.fill((53, 80, 112))
+            bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
+            for bullet in bullets_group:
+                bullet.update(objects)
+            #print(player.velocity.y)
+            checkPlayerInput(player, delta_time, 200, objects, bullets_group)
+            #for obj in objects:
+            #    if player.rect.y > obj.rect.y + 60:
+            #        player.rect.y += 500 * delta_time
+            #    else:
+            #        player.rect.y = 300
+            bullets_group.draw(mainSurface)  # Draw all bullets
+            if player.dead == True:
+                gamestate = 2
+            updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
+            updateObjects(player, delta_time, objects)           # Update X-axis movement
+            handle_collisions(player, objects)
+            score = score + 1
+            score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+            mainSurface.blit(score_text, (10, 10))  
 
-                highest_y = min(obj.rect.y for obj in objects if isinstance(obj, Platform))
-                for obj in objects:
-                    if isinstance(obj, Platform):
-                        obj.moving(surfaceSize) 
-                        obj.render(mainSurface)    
-                        if obj.rect.y > 1500:
-                            Platform.respawn(obj, surfaceSize, 175, highest_y) 
+            highest_y = min(obj.rect.y for obj in objects if isinstance(obj, Platform))
+            for obj in objects:
+                if isinstance(obj, Platform):
+                    obj.moving(surfaceSize) 
+                    obj.render(mainSurface)    
+                    if obj.rect.y > 1400:
+                        Platform.respawn(obj, surfaceSize, 175, highest_y) 
+                       # if random.random() < 0.25:
+                       #     new_enemy = enemy.respawn(obj, surfaceSize, 175, highest_y)
+                       #     if new_enemy is not None:
+                       #         objects.append(new_enemy)
+            for obj in objects:
+                obj.render(mainSurface)
+                if obj.type == "breaking" and obj.timer != 0:
+                    print(obj.timer)
+                    obj.timer -= delta_time
+                    if obj.timer <= 0:
+                        Platform.respawn(obj, surfaceSize, 175, highest_y)
+            player.render(mainSurface)
 
             #-----------------------------Drawing Everything-------------------------------------#
             # We draw everything from scratch on each frame.
             # So first fill everything with the background color
             
 
-            # Rendering and updating objects and entities ->
-                player.render(mainSurface) ## why is there two lol
-            #-----------------------------Program Logic---------------------------------------------#
-            # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])  # Clear the screen
-                for obj in objects:
-                    obj.render(mainSurface)
-                    if obj.type == "breaking" and obj.timer != 0:
-                        print(obj.timer)
-                        obj.timer -= delta_time
-                        if obj.timer <= 0:
-                            objects.remove(obj)
+        # Rendering and updating objects and entities ->
+        #-----------------------------Program Logic---------------------------------------------#
+        # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])  # Clear the screen
+            
 
-                for entity in activeEntities:
-                    entity.render(mainSurface)
-                    updateObjects(entity, delta_time, objects)
-                    entity.movementBehaviour(entity.originalX, entity.maxDist, delta_time)
-                for en in activeEntities:
-                    checkBullet(en,bullets_group,player,activeEntities)
-                pygame.display.flip()
-                clock.tick(60)
-        if gamestate == 2:
-            draw_death_screen(mainSurface, font, score)
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_SPACE]:
-                main()  # Restart the game when Space is pressed
-            elif keys[pygame.K_ESCAPE]:
-                pygame.quit()
-                break
+            for entity in activeEntities:
+                entity.render(mainSurface)
+                updateObjects(entity, delta_time, objects)
+                entity.movementBehaviour(entity.originalX, entity.maxDist, delta_time)
+            for en in activeEntities:
+                checkBullet(en,bullets_group,player,activeEntities)
             pygame.display.flip()
             clock.tick(60)
+            
+        if gamestate == 2:
+            pygame.quit() 
+            print("dead")
             #For now it just kills it, yana do death screen. 
     pygame.quit()     # Once we leave the loop, close the window.
 
@@ -458,5 +434,4 @@ def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
        
     return bullets_group
                 
-if __name__ == "__main__":
-    main()
+main()
