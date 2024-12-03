@@ -63,13 +63,14 @@ class enemy():
 
 # platform class
 class Platform():
-    def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None, speed = 0):
+    def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None, speed = 0, first = False):
         self.rect = pygame.Rect(x ,y ,width,height)
         self.sprite = None
         self.type = platform_type
         self.speed = 0 if platform_type != "moving" else random.randint(1, 3)
         self.timer = None # timer for breaking platforms
         self.active = True # breaking platforms will deactivate after breaking
+        self.first = first
         
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
@@ -77,6 +78,8 @@ class Platform():
 
     def get_platform_colour(self):
         # this could be made into a switch case
+        if self.first:
+            return (0, 0, 0) ## black for the first
         if self.type == "regular":
             return (0, 255, 0)  # Green for regular
         elif self.type == "breaking":
@@ -110,6 +113,7 @@ class Platform():
 
     def render(self, screen):
         colour = self.get_platform_colour() if self.active else (128, 128, 128) # grey = inactive
+        
         if self.sprite:
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
         else:     
@@ -195,7 +199,7 @@ def main():
     #List of all active objects on the screen
     objects = []
     Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-    first_platform = Platform(300,600,100,20) ## ivy has 600 for mac
+    first_platform = Platform(300, 600, 100, 20, True) ## ivy has 600 for mac
     objects.append(first_platform)
 
     #placeholder enemy
