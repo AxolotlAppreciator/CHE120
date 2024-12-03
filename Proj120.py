@@ -101,9 +101,9 @@ class Platform():
         else:
             if platform_type == 'breaking':
                 self.sprite = breaking
-            elif platform_type == 'moving':
+            if platform_type == 'moving':
                 self.sprite = moving
-            else:
+            if platform_type == 'regular':
                 self.sprite = grass 
         # if spritePath ==  'grass':
         #     self.sprite = pygame.image.load('images/grassplatform.png')
