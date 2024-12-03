@@ -90,7 +90,7 @@ class Platform():
         
     # horizontal moving platform
     def moving(self, screen_width):
-        if self.type == "moving" and self.active:
+        if self.type == "moving" and self.active and not self.first:
             self.rect.x += self.speed
             # change directions after hitting the edges of the screen
             if self.rect.left <= 0 or self.rect.right >= screen_width:
@@ -199,7 +199,7 @@ def main():
     #List of all active objects on the screen
     objects = []
     Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-    first_platform = Platform(300, 600, 100, 20, True) ## ivy has 600 for mac
+    first_platform = Platform(300, 600, 100, 20, "regular", True) 
     objects.append(first_platform)
 
     #placeholder enemy
@@ -333,7 +333,8 @@ def updateY(self, delta_time, objects, entities):
     else:
         vertical_offset = 0
     for obj in objects:
-        obj.rect.y -= vertical_offset
+        if not obj.first:
+            obj.rect.y -= vertical_offset
     for entity in entities:
         entity.rect.y -= vertical_offset
 
