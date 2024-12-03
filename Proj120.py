@@ -30,7 +30,7 @@ class moving_entity():
         # If there's a sprite path, load the sprite
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
-            self.sprite = pygame.transform.scale(self.sprite, (width+30, height))
+            self.sprite = pygame.transform.scale(self.sprite, (width+40, height))
 
         # Create a flipped version of the sprite for facing left
         self.sprite_left = pygame.transform.flip(self.sprite, True, False)  # Flip horizontally
@@ -55,7 +55,7 @@ class enemy():
         self.theta = 0
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
-            self.sprite = pygame.transform.scale(self.sprite,(width+30,height))
+            self.sprite = pygame.transform.scale(self.sprite,(width+40,height))
 
     def movementBehaviour(self,originalX,maxDist,delta_time,player):
         if self.type == "moving":
@@ -214,12 +214,11 @@ def main():
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
     
         if gamestate == 1:
-            player = moving_entity(300,375,75,100,290,0.85,"images/player.png")
+            player = moving_entity(300,375,65,100,290,0.85,"images/player.png")
             player.velocity.y = 497
 
             #List of all active objects on the screen
             objects = []
-            active_entities = []
             Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
             first_platform = Platform(300, 600, 100, 20)  # "regular", spritePath = None, speed = 0, first=True
             objects.append(first_platform)
@@ -298,7 +297,7 @@ def main():
                 clock.tick(60)
             
         if gamestate == 2:
-            mainSurface.fill((255, 80, 10))
+            mainSurface.fill((255, 20, 10))
             pygame.display.flip()
             print("dead")
             ev = pygame.event.poll()    # Look for any event
@@ -330,7 +329,7 @@ def checkBullet(self,bullet,player,enemylist):
 def respawn(screen_width, vertical_gap, highest_y,activeEntities):
         #enemy2 = enemy(200,300,50,75,100,spritePath = "images/enemy.png",enemy_type="spinning")
         movement_types = ["moving", "spinning","following"]
-        probabilities = [0.4, 0.3,0.3]
+        probabilities = [0.5, 0.45,0.05]
         typez = random.choices(movement_types, probabilities)[0]
         xpos = random.randint(0, screen_width)
         ypos = highest_y - vertical_gap
