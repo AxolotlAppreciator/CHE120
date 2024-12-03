@@ -245,6 +245,19 @@ def main():
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
         
+<<<<<<< HEAD
+        if gamestate == 0:
+            start_button_rect = draw_main_menu(mainSurface, bg_home, menu_font, instructfont)
+            ev = pygame.event.poll()
+            if ev.type == pygame.QUIT:
+                 return
+            if ev.type == pygame.KEYDOWN:
+                gamestate = 1
+                    
+            if ev.type == pygame.MOUSEBUTTONDOWN:
+                if start_button_rect.collidepoint(ev.pos):
+                    gamestate = 1
+=======
         # if gamestate == 0:
         #     start_button_rect = draw_main_menu(mainSurface, bg_home, menu_font, instructfont)
         #     ev = pygame.event.poll()
@@ -256,6 +269,7 @@ def main():
         #     if ev.type == pygame.MOUSEBUTTONDOWN:
         #         if start_button_rect.collidepoint(ev.pos):
         #             gamestate = 1
+>>>>>>> 67e947c62bdf5308110f5597d5fed7ff19e89cf6
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
     
