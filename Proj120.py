@@ -9,11 +9,7 @@ from pygame import mixer
 # mixer.music.load("audio/song.mp3") 
 # mixer.music.set_volume(0.7) 
 # mixer.music.play() 
-pygame.display.set_caption("Chill Jump")
-## font = pygame.font.SysFont("Comic Sans MS",25) ## change to comic sans and pick sizing and whatnot
-grass = pygame.image.load('images/grassplatform.png')
-breaking = pygame.image.load('images/breaking.png')
-moving = pygame.image.load('images/moving.png')
+
 #Instantiate a new player entity
 class moving_entity():     
     def __init__(self,x, y, width, height, max_speed, deceleration_rate, spritePath=None):
@@ -96,20 +92,12 @@ class Platform():
         self.timer = 0 # timer for breaking platforms
         self.active = True # breaking platforms will deactivate after breaking
         self.first = first
+        
         if spritePath:
-            self.sprite = spritePath  
-        else:
-            if platform_type == 'breaking':
-                self.sprite = breaking
-            if platform_type == 'moving':
-                self.sprite = moving
-            if platform_type == 'regular':
-                self.sprite = grass 
-        # if spritePath ==  'grass':
-        #     self.sprite = pygame.image.load('images/grassplatform.png')
-        #     #self.sprite = pygame.transform.scale(self.sprite, (width, height))
+            self.sprite = pygame.image.load(spritePath).convert_alpha()
+            self.sprite = pygame.transform.scale(self.sprite, (width, height))
 
-    def get_platform_colour(self):
+    def get_platform_image(self):
         if self.type == "regular":
             return (0, 255, 0)  # Green for regular
         elif self.type == "breaking":
@@ -117,6 +105,14 @@ class Platform():
         elif self.type == "moving":
             return (0, 0, 255)  # Blue for moving
         return (255, 255, 255)  # Default to white if unknown
+        
+    def get_platform_sprite(self):
+        if self.type == "regular":
+            return "images/grassplatform.png"  # Green for regular
+        elif self.type == "breaking":
+            return "images/breaking.png"  # Red for breakable
+        elif self.type == "moving":
+            return "images/clouds.png"  # Blue for moving
         
     # horizontal moving platform
     def moving(self, screen_width):
@@ -144,10 +140,11 @@ class Platform():
     
 
     def render(self, screen):
-        colour = self.get_platform_colour() if self.active else (128, 128, 128) # grey = inactive
-        
+        colour = self.get_platform_image() if self.active else (128, 128, 128) # grey = inactive
+        plat_sprite = self.get_platform_sprite() if self.active else None
+
         if self.sprite:
-            screen.blit(self.sprite, (self.rect.x, self.rect.y))
+            screen.blit(plat_sprite, (self.rect.x, self.rect.y))
         else:     
             pygame.draw.rect(screen, colour, self.rect, border_radius=10)
     
@@ -233,6 +230,10 @@ def main():
     clouds = pygame.image.load('images/clouds.png')
     clouds = pygame.transform.scale(clouds, (surfaceSize, surfaceSize))
     clock = pygame.time.Clock()
+    pygame.display.set_caption("Chill Jump")
+    grass = pygame.image.load('images/grassplatform.png')
+    breaking = pygame.image.load('images/breaking.png')
+    moving = pygame.image.load('images/moving.png')
 
     # Create surface of (width, height), and its window.
     mainSurface = pygame.display.set_mode((surfaceSize, surfaceSize))
@@ -267,7 +268,7 @@ def main():
             #List of all active objects on the screen
             objects = []
             Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-            first_platform = Platform(300, 600, 100, 20, spritePath=grass)  # "regular", spritePath = None, speed = 0, first=True
+            first_platform = Platform(300, 600, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
             objects.append(first_platform)
 
             #placeholder enemy
