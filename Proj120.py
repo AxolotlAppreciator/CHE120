@@ -202,14 +202,15 @@ def main():
     #-----------------------------Setup------------------------------------------------------#
     """ Set up the game and run the main game loop """
     pygame.init()      # Prepare the pygame module for use
+    pygame.font.init()
     surfaceSize = 580   # Desired physical surface size, in pixels.
-
+    
     clouds = pygame.image.load('images/clouds.png')
     clouds = pygame.transform.scale(clouds, (surfaceSize, surfaceSize))
     clock = pygame.time.Clock()
     # Create surface of (width, height), and its window.
     mainSurface = pygame.display.set_mode((surfaceSize, surfaceSize))
-    font = pygame.font.Font(None, 36)
+    font = pygame.font.Font("fonts/Comic Sans MS.ttf", 36)
     score = 0
 
     #-----------------------------Program Variable Initialization----------------------------#
