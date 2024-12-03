@@ -110,16 +110,18 @@ class Platform():
         if self.type == "breaking" and self.active:
             self.active = False
 
-    def handle_breaking(self):
-        if self.timer is None:
-            self.timer = time.time()
-        elif time.time() - self.timer > 1.5: 
-            self.active = True
+    def on_collision(self, player):
+        if self.type == "breaking" and self.active and player.rect.colliderect(self.rect):
+            if self.timer is None:  # Start the 1.5-second timer when touched
+                self.timer = time.time()
+                self.active = False  # Platform becomes inactive after 1.5 seconds
 
-    def on_collision(self):
-        if self.type == "breaking" and self.active:
-            self.active = False
-            self.timer = time.time()
+    def handle_breaking(self):
+        if self.timer:
+            elapsed_time = time.time() - self.timer
+            if elapsed_time >= 1.5:
+                self.active = False  # Platform disappears after 1.5 seconds
+    
 
     def render(self, screen):
         colour = self.get_platform_colour() if self.active else (128, 128, 128) # grey = inactive
