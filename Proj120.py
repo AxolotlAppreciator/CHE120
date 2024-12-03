@@ -94,10 +94,13 @@ class Platform():
         self.timer = 0 # timer for breaking platforms
         self.active = True # breaking platforms will deactivate after breaking
         self.first = first
-
         if spritePath:
-            self.sprite = pygame.image.load(spritePath).convert_alpha()
-            self.sprite = pygame.transform.scale(self.sprite, (width, height))
+            self.sprite = spritePath  
+        else:
+            self.sprite = pygame.Surface((width, height)) 
+        # if spritePath ==  'grass':
+        #     self.sprite = pygame.image.load('images/grassplatform.png')
+        #     #self.sprite = pygame.transform.scale(self.sprite, (width, height))
 
     def get_platform_colour(self):
         if self.type == "regular":
@@ -221,6 +224,7 @@ def main():
     clouds = pygame.image.load('images/clouds.png')
     clouds = pygame.transform.scale(clouds, (surfaceSize, surfaceSize))
     clock = pygame.time.Clock()
+    grass = pygame.image.load('images/grassplatform.png')
     # Create surface of (width, height), and its window.
     mainSurface = pygame.display.set_mode((surfaceSize, surfaceSize))
     scorefont = pygame.font.Font("fonts/Comic Sans MS.ttf", 36)
@@ -255,7 +259,7 @@ def main():
             #List of all active objects on the screen
             objects = []
             Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-            first_platform = Platform(300, 600, 100, 20)  # "regular", spritePath = None, speed = 0, first=True
+            first_platform = Platform(300, 600, 100, 20, spritePath=grass)  # "regular", spritePath = None, speed = 0, first=True
             objects.append(first_platform)
 
             #placeholder enemy
