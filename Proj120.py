@@ -419,19 +419,16 @@ def main():
         if gamestate == 2:
             mainSurface.fill((255, 20, 10))
             end_screen(mainSurface, bg_home, die_font, again_font, score)
-            #score_text = scorefont.render(f'Score: {score}', True, (255, 255, 255))
             ev = pygame.event.poll()    # Look for any event
-            # if ev.type == pygame.MOUSEBUTTONDOWN:
-            #     if replay_button.collidepoint(ev.pos):
-            #         gamestate = 1
-
             if ev.type == pygame.QUIT:  # Window close button clicked?
                 break
             if ev.type == pygame.KEYDOWN:
                 if ev.key == pygame.K_ESCAPE:
                     break
+                elif ev.key == pygame.K_SPACE:
+                    gamestate = 1
+                    score = 0
             pygame.display.flip()
-            #For now it just kills it, yana do death screen. 
         if gamestate == 4:
             break
         objects = []
