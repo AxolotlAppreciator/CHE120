@@ -202,7 +202,7 @@ def main():
     #List of all active objects on the screen
     objects = []
     Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-    first_platform = Platform(300, 600, 100, 20)  # "regular", spritePath = None, first=True
+    first_platform = Platform(300, 600, 100, 20)  # "regular", spritePath = None, speed = 0, first=True
     objects.append(first_platform)
 
     #placeholder enemy
