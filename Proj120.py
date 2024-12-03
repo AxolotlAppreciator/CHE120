@@ -216,6 +216,7 @@ def main():
     
         if gamestate == 1:
             player = moving_entity(300,375,65,100,290,0.85,"images/player.png")
+            heightEntity = enemy(0,0,0,0,0,0,"images/player.png")
             player.velocity.y = 497
 
             #List of all active objects on the screen
@@ -228,8 +229,7 @@ def main():
             #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
 
             #List of active entities that get updated each frame
-            activeEntities = []
-            score = 0
+            activeEntities = [heightEntity]
             bullets_group = pygame.sprite.Group()
 
             while gamestate == 1:
@@ -244,10 +244,14 @@ def main():
                 #check for dead player
                 if player.dead == True:
                     gamestate = 2
-                #temp score
-                score = score + 1
-                score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+                score = max(heightEntity.rect.y,0)
+                
 
+                score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+                if player.lastTouched and (player.rect.y > player.lastTouched.y + 600):
+                    player.rect.y += 10
+                    if player.rect.y >= 600:
+                        gamestate = 2
                 #clears main surface
                 mainSurface.fill((53, 80, 112))
                 mainSurface.blit(clouds, (0, 0))
@@ -299,6 +303,7 @@ def main():
                 clock.tick(60)
             
         if gamestate == 2:
+            score_text = font.render(f'Score: {score}', True, (255, 255, 255))
             mainSurface.fill((255, 20, 10))
             pygame.display.flip()
             print("dead")
