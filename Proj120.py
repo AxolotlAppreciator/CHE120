@@ -76,16 +76,17 @@ class enemy():
 
         # 
         if enemy_type == "moving":
-            spritePath = "images/enemy.png"
+            self.sprite = "images/enemy.png"
         elif enemy_type == "spinning":
-            spritePath = "images/enemySpinning.png"
+            self.sprite = "images/enemySpinning.png"
         elif enemy_type == "following":
-            spritePath = "images/enemyChasing.png"
+            self.sprite = "images/enemyChasing.png"
 
         # If there's a sprite path, load the sprite
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite,(width+40,height))
+        print("enemyInitialized")
 
     def movementBehaviour(self,originalX,maxDist,delta_time,player):
         '''
@@ -289,7 +290,8 @@ def main():
 
     #-----------------------------Program Variable Initialization----------------------------#
     gamestate = 0
-    
+ 
+
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
 #         Music Control
@@ -322,11 +324,9 @@ def main():
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
     
         if gamestate == 1:
-            player = moving_entity(300,305,65,100,290,0.85,"images/player.png")
-            player.velocity.y = 0
-
             heightEntity = enemy(0,0,0,0,0,0,"images/player.png")
             #List of all active objects on the screen
+            first_platform = Platform(300, 400, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
             objects = []
             first_platform = Platform(300, 400, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
             objects.append(first_platform)
@@ -335,8 +335,10 @@ def main():
             #List of active entities that get updated each frame
             activeEntities = [heightEntity]
             bullets_group = pygame.sprite.Group()
-
+            player = moving_entity(300,305,65,100,290,0.85,"images/player.png")
+            player.velocity.y = 0
             while gamestate == 1:
+
                 delta_time = clock.get_time() / 1000 # Time since last frame
                 #-----------------------------Event Handling-----------------------------------------#
                 ev = pygame.event.poll()    # Look for any event
@@ -346,8 +348,8 @@ def main():
                     if ev.key == pygame.K_ESCAPE:
                         gamestate = 4
                 # #check for dead player
-                # #if player.dead == True:
-                #     gamestate = 2
+                if player.dead == True:
+                    gamestate = 2
                 
                 currentscore = heightEntity.rect.y
                 if currentscore > score:
@@ -363,18 +365,14 @@ def main():
                 mainSurface.blit(clouds, (0, 0))
 
 
+                handle_collisions(player, objects)
+                updateY(player, delta_time, objects, activeEntities) 
+                checkPlayerInput(player, delta_time, 200, objects, bullets_group)
 
                 # #||-----Updating objects and detecting collision between the player and the environment-----||
-                # bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
+                bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
                 for bullet in bullets_group:
                     bullet.update(objects)
-                checkPlayerInput(player, delta_time, 200, objects, bullets_group)
-                updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
-                updateObjects(player, delta_time, objects)           # Update X-axis movement
-                handle_collisions(player, objects)
-                mainSurface.blit(score_text, (10, 10))  
-
-                highest_y = min(obj.rect.y for obj in objects if isinstance(obj, Platform))
                 for obj in objects:
                     if isinstance(obj, Platform):
                         obj.moving(surfaceSize) 
@@ -393,17 +391,23 @@ def main():
                         obj.timer -= delta_time
                         if obj.timer <= 0:
                             Platform.respawn(obj, surfaceSize, 175, highest_y)
+                updateObjects(player, delta_time, objects)
+                 # Update Y-axis movement
+                mainSurface.blit(score_text, (10, 10))  
+
+                highest_y = min(obj.rect.y for obj in objects if isinstance(obj, Platform))
+                
                 player.render(mainSurface)
 
                 #||-----Drawing Everything-----||
                 #(also includes some entity behaviour for brievity)
-                # bullets_group.draw(mainSurface)  # Draw all bullets
-                # for entity in activeEntities:
-                #     entity.render(mainSurface)
-                #     updateObjects(entity, delta_time, objects)
-                #     entity.movementBehaviour(entity.originalX, entity.maxDist, delta_time,player)
-                # for en in activeEntities:
-                #     checkBullet(en,bullets_group,player,activeEntities)
+                bullets_group.draw(mainSurface)  # Draw all bullets
+                for entity in activeEntities:
+                    entity.render(mainSurface)
+                    updateObjects(entity, delta_time, objects)
+                    entity.movementBehaviour(entity.originalX, entity.maxDist, delta_time,player)
+                for en in activeEntities:
+                    checkBullet(en,bullets_group,player,activeEntities)
 
                 pygame.display.flip()
                 clock.tick(60)
@@ -426,6 +430,7 @@ def main():
             #For now it just kills it, yana do death screen. 
         if gamestate == 4:
             break
+        objects = []
     pygame.quit()     # Once we leave the loop, close the window.
 
 
@@ -536,15 +541,14 @@ def update_animation(self, delta_time):
                 self.animation_timer = 0
 
 def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
-    print(player.velocity.y)
     keys = pygame.key.get_pressed()
     mouse_buttons = pygame.mouse.get_pressed()
     # Jump logic
     if (keys[pygame.K_UP] or keys[pygame.K_w]) and player.grounded:
-        player.velocity.y = -500  # Adjust jump strength
+        player.velocity.y = -900  # Adjust jump strength
         player.grounded = False  # Set player as airborne
-    if (not player.grounded) and player.velocity.y < 1000:
-        player.velocity.y += 900 * delta_time
+    if not player.grounded:
+        player.velocity.y += 800 * delta_time
 
         
     # Horizontal movement logic
