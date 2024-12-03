@@ -57,7 +57,7 @@ class enemy():
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite,(width+30,height))
 
-    def movementBehaviour(self,originalX,maxDist,delta_time):
+    def movementBehaviour(self,originalX,maxDist,delta_time,player):
         if self.type == "moving":
             if self.rect.x > originalX + maxDist:
                 self.direction = -1
@@ -67,6 +67,9 @@ class enemy():
             self.theta += math.pi*delta_time
             self.rect.x += math.cos(self.theta)*3
             self.rect.y += math.sin(self.theta)*3
+        elif self.type == "following":
+            directionVector = player.rect.normalize()
+            self.rect += directionVector
 
     def render(self, screen):
         if self.sprite:
@@ -285,7 +288,7 @@ def main():
                 for entity in activeEntities:
                     entity.render(mainSurface)
                     updateObjects(entity, delta_time, objects)
-                    entity.movementBehaviour(entity.originalX, entity.maxDist, delta_time)
+                    entity.movementBehaviour(entity.originalX, entity.maxDist, delta_time,player)
                 for en in activeEntities:
                     checkBullet(en,bullets_group,player,activeEntities)
 
@@ -324,8 +327,8 @@ def checkBullet(self,bullet,player,enemylist):
 
 def respawn(screen_width, vertical_gap, highest_y,activeEntities):
         #enemy2 = enemy(200,300,50,75,100,spritePath = "images/enemy.png",enemy_type="spinning")
-        movement_types = ["moving", "spinning"]
-        probabilities = [0.7, 0.3]
+        movement_types = ["moving", "spinning","following"]
+        probabilities = [0.7, 0.2,0.1]
         typez = random.choices(movement_types, probabilities)[0]
         xpos = random.randint(0, screen_width)
         ypos = highest_y - vertical_gap
