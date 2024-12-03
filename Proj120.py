@@ -297,9 +297,9 @@ def handle_collisions(self, objects):
         if self.rect.colliderect(obj.rect):
             # Check if the object is landing on top of the platform
             if self.velocity.y > 0 and self.rect.bottom >= obj.rect.top:
-                print(obj.rect.top)
-                print(self.rect.bottom)
-                if (self.rect.bottom - obj.rect.top) < 10 * self.velocity.y/100:
+                #print(obj.rect.top)
+                #print(self.rect.bottom)
+                if (self.rect.bottom - obj.rect.top) < 10 * self.velocity.y/120:
 
                     obj.rect.top = self.rect.bottom  # Snap to the top of the platform
                     self.grounded = True
