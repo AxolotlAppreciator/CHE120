@@ -104,7 +104,7 @@ class Platform():
         if self.first:
             return (0, 0, 0) ## black for the first
         if self.type == "regular" and not self.first:
-            return (0, 255, 0)  # Green for regular
+            return (45, 94, 52)  # Green for regular
         elif self.type == "breaking":
             return (255, 0, 0)  # Red for breakable
         elif self.type == "moving":
