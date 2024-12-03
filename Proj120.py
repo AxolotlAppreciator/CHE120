@@ -140,7 +140,7 @@ class Platform():
     
 
     def render(self, screen):
-        if self.sprite and self.active
+        if self.sprite and self.active:
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
         else:
             colour = self.get_platform_colour() if self.active else (128, 128, 128) # grey = inactive
