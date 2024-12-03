@@ -258,16 +258,6 @@ def main():
                     if obj.rect.y > 1500:
                         Platform.respawn(obj, surfaceSize, 175, highest_y) 
 
-           # for platform in objects:
-              #  if isinstance(platform, Platform):  
-                   # platform.update(surfaceSize, delta_time) 
-                   # platform.respawn(surfaceSize, surfaceSize)
-                  #  if player.rect.colliderect(platform.rect):
-                       # if platform.active:
-                         #   platform.on_collision()
-                          #  player.grounded = True
-                          #  player.rect.bottom = platform.rect.top
-
         #-----------------------------Drawing Everything-------------------------------------#
         # We draw everything from scratch on each frame.
         # So first fill everything with the background color
