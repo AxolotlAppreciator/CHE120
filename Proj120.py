@@ -217,6 +217,7 @@ def main():
 
     font = pygame.font.Font(None, 36)
     player = moving_entity(300,375,75,100,290,0.85,"images/player.png")
+    clouds = pygame.image.load('images/clouds.png')
     player.velocity.y = 497
 
     #List of all active objects on the screen
@@ -248,6 +249,8 @@ def main():
             break
         if gamestate == 0:
             draw_menu(mainSurface, font)
+            mainSurface.fill((53, 80, 112))
+            mainSurface.blit(clouds, (0, 0))  
             keys = pygame.key.get_pressed()
             if keys[pygame.K_SPACE]:
                 gamestate = 1  # Start the game when Space is pressed
@@ -265,6 +268,7 @@ def main():
                 if ev.key == pygame.K_ESCAPE:
                     break
             mainSurface.fill((53, 80, 112))
+            mainSurface.blit(clouds, (0, 0)) 
             bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
             for bullet in bullets_group:
                 bullet.update(objects)
