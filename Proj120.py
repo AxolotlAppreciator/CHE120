@@ -13,6 +13,7 @@ pygame.display.set_caption("Chill Jump")
 ## font = pygame.font.SysFont("Comic Sans MS",25) ## change to comic sans and pick sizing and whatnot
 grass = pygame.image.load('images/grassplatform.png')
 breaking = pygame.image.load('images/breaking.png')
+moving = pygame.image.load('images/moving.png')
 #Instantiate a new player entity
 class moving_entity():     
     def __init__(self,x, y, width, height, max_speed, deceleration_rate, spritePath=None):
@@ -100,8 +101,10 @@ class Platform():
         else:
             if platform_type == 'breaking':
                 self.sprite = breaking
+            elif platform_type == 'moving':
+                self.sprite = moving
             else:
-                self.sprite = pygame.Surface((width, height)) 
+                self.sprite = grass 
         # if spritePath ==  'grass':
         #     self.sprite = pygame.image.load('images/grassplatform.png')
         #     #self.sprite = pygame.transform.scale(self.sprite, (width, height))
