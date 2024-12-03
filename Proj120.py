@@ -47,16 +47,21 @@ class enemy():
         self.velocity = pygame.Vector2(0,0)
         self.maxDist = maxDist
         self.originalX = x
+        self.theta = 0
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
-            self.sprite = pygame.transform.scale(self.sprite,(width,height))
+            self.sprite = pygame.transform.scale(self.sprite,(width+30,height))
 
-    def movementBehaviour(self,originalX,maxDist):
-        if self.rect.x > originalX + maxDist:
-            self.direction = -1
-
-        elif self.rect.x > originalX - maxDist:
-            self.direction = 1
+    def movementBehaviour(self,originalX,maxDist,delta_time):
+        if self.type == "moving":
+            if self.rect.x > originalX + maxDist:
+                self.direction = -1
+            elif self.rect.x > originalX - maxDist:
+                self.direction = 1
+        elif self.type == "spinning":
+            self.theta += math.pi*delta_time
+            self.rect.x += math.cos(self.theta)*3
+            self.rect.y += math.sin(self.theta)*3
 
     def render(self, screen):
         if self.sprite:
@@ -203,8 +208,10 @@ def main():
     #placeholder enemy
     #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
     enemy1 = enemy(200,300,50,75,100,spritePath = "images/enemy.png")
+    enemy2 = enemy(200,300,50,75,100,spritePath = "images/enemy.png",enemy_type="spinning")
+
     #List of active entities that get updated each frame
-    activeEntities = [enemy1]
+    activeEntities = [enemy1,enemy2]
     gamestate = 1
     score = 0
     bullets_group = pygame.sprite.Group()
@@ -268,7 +275,7 @@ def main():
             for entity in activeEntities:
                 entity.render(mainSurface)
                 updateObjects(entity, delta_time, objects)
-                entity.movementBehaviour(entity.originalX, entity.maxDist)
+                entity.movementBehaviour(entity.originalX, entity.maxDist, delta_time)
             for en in activeEntities:
                 checkBullet(en,bullets_group,player,activeEntities)
             pygame.display.flip()
