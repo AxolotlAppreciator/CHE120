@@ -216,9 +216,12 @@ def draw_main_menu(screen, image, font1, font2):
     pygame.display.flip()
     return start_button_rect
 
-def end_screen(screen, image, font1, font2):
-    pass
-
+def end_screen(screen, image, font1, font2, score):
+    screen.blit(image, (0,0))
+    end_text = font1.render((f'You died! Your score was {score}'), True, (0,0,0))
+    screen.blit(end_text (100, 100))
+    again_esc_text = font2.render('Press space to play again, or escape to close')
+    screen.blit(again_esc_text (70, 300))
 def main():
     #-----------------------------Setup------------------------------------------------------#
     """ Set up the game and run the main game loop """
@@ -243,12 +246,11 @@ def main():
     score = 0
 
     #-----------------------------Program Variable Initialization----------------------------#
-    gamestate = 1
+    gamestate = 0
     
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
         
-<<<<<<< HEAD
         if gamestate == 0:
             start_button_rect = draw_main_menu(mainSurface, bg_home, menu_font, instructfont)
             ev = pygame.event.poll()
@@ -260,19 +262,6 @@ def main():
             if ev.type == pygame.MOUSEBUTTONDOWN:
                 if start_button_rect.collidepoint(ev.pos):
                     gamestate = 1
-=======
-        # if gamestate == 0:
-        #     start_button_rect = draw_main_menu(mainSurface, bg_home, menu_font, instructfont)
-        #     ev = pygame.event.poll()
-        #     if ev.type == pygame.QUIT:
-        #          return
-        #     if ev.type == pygame.KEYDOWN:
-        #         if ev.key == pygame.KEYDOWN:
-        #             gamestate = 1
-        #     if ev.type == pygame.MOUSEBUTTONDOWN:
-        #         if start_button_rect.collidepoint(ev.pos):
-        #             gamestate = 1
->>>>>>> 67e947c62bdf5308110f5597d5fed7ff19e89cf6
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
     
@@ -368,8 +357,8 @@ def main():
             
         if gamestate == 2:
             mainSurface.fill((255, 20, 10))
-            replay_button = draw_main_menu(mainSurface, bg_home, menu_font, instructfont)
-            score_text = scorefont.render(f'Score: {score}', True, (255, 255, 255))
+            replay_button = draw_main_menu(mainSurface, bg_home, menu_font, instructfont, score)
+            #score_text = scorefont.render(f'Score: {score}', True, (255, 255, 255))
             if ev.type == pygame.MOUSEBUTTONDOWN:
                 if replay_button.collidepoint(ev.pos):
                     gamestate = 1
