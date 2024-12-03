@@ -247,7 +247,7 @@ def main():
             for obj in objects:
                 if isinstance(obj, Platform):
                     if obj.rect.y > 1000:
-                        Platform.respawn(obj, surfaceSize, vertical_gap, highest_y)
+                        Platform.respawn(obj, surfaceSize, 175, highest_y)
 
             for obj in objects:
                 if isinstance(obj, Platform): 
