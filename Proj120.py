@@ -94,22 +94,8 @@ class Platform():
         self.first = first
         
         if spritePath:
-<<<<<<< Updated upstream
-            self.sprite = spritePath  
-        else:
-            if platform_type == 'breaking':
-                self.sprite = breaking
-            if platform_type == 'moving':
-                self.sprite = moving
-            if platform_type == 'regular':
-                self.sprite = grass 
-        # if spritePath ==  'grass':
-        #     self.sprite = pygame.image.load('images/grassplatform.png')
-        #     #self.sprite = pygame.transform.scale(self.sprite, (width, height))
-=======
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite, (width, height))
->>>>>>> Stashed changes
 
     def get_platform_image(self):
         if self.type == "regular":
