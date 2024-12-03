@@ -57,7 +57,7 @@ class enemy():
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite,(width+30,height))
 
-    def movementBehaviour(self,originalX,maxDist,delta_time,player):
+    def movementBehaviour(self,originalX,maxDist,delta_time):
         if self.type == "moving":
             if self.rect.x > originalX + maxDist:
                 self.direction = -1
