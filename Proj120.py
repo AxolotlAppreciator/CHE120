@@ -6,7 +6,7 @@ import math
 from pygame import mixer 
 
 # mixer.init() 
-# mixer.music.load("song.mp3") 
+# mixer.music.load("audio/song.mp3") 
 # mixer.music.set_volume(0.7) 
 # mixer.music.play() 
 pygame.display.set_caption("Chill Jump")
@@ -200,23 +200,25 @@ class Bullet(pygame.sprite.Sprite):
         if not self.rect.colliderect(pygame.Rect(0, 0, pygame.display.get_surface().get_width(), pygame.display.get_surface().get_height())):
             self.kill()  # Remove the bullet from the sprite group
     
-# def draw_main_menu(screen, image, font1, font2):
-#     screen.blit(image, (0,0))
-#     title_text1 = font1.render('Welcome to', True, (0,0,0))
-#     screen.blit(title_text1, (130, 150))
-#     title_text2 = font1.render('Chill Jump!', True, (0,0,0))
-#     screen.blit(title_text2, (150, 210))
+def draw_main_menu(screen, image, font1, font2):
+    screen.blit(image, (0,0))
+    title_text1 = font1.render('Welcome to', True, (0,0,0))
+    screen.blit(title_text1, (130, 150))
+    title_text2 = font1.render('Chill Jump!', True, (0,0,0))
+    screen.blit(title_text2, (150, 210))
 
-#     start_button = font1.render("Start", True, (255, 255, 255))
-#     start_button_rect = start_button.get_rect(center=(580 // 2, 580 // 2 + 75))
-#     screen.blit(start_button, start_button_rect)
+    start_button = font1.render("Start", True, (255, 255, 255))
+    start_button_rect = start_button.get_rect(center=(580 // 2, 580 // 2 + 75))
+    screen.blit(start_button, start_button_rect)
 
-#     instructions1 = font2.render('press start or', True, (220, 220, 220))
-#     screen.blit(instructions1, (175, 435))
-#     instructions1 = font2.render('any key to play', True, (220, 220, 220))
-#     screen.blit(instructions1, (175, 470))
-#     pygame.display.flip()
-#     return start_button_rect
+    instructions1 = font2.render('press start or', True, (220, 220, 220))
+    screen.blit(instructions1, (175, 435))
+    instructions1 = font2.render('any key to play', True, (220, 220, 220))
+    screen.blit(instructions1, (175, 470))
+    pygame.display.flip()
+    return start_button_rect
+
+def end_screen(screen, image, font1, font2):
 
 def main():
     #-----------------------------Setup------------------------------------------------------#
@@ -243,18 +245,17 @@ def main():
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
         
-        # if gamestate == 0:
-        #     start_button_rect = draw_main_menu(mainSurface, bg_home, menu_font, instructfont)
-        #     ev = pygame.event.poll()
-        #     if ev.type == pygame.QUIT:
-        #          return
-        #     if ev.type == pygame.KEYDOWN:
-        #         if ev.key == pygame.KEYDOWN:
-        #             gamestate = 1
-        #     if ev.type == pygame.MOUSEBUTTONDOWN:
-        #         if start_button_rect.collidepoint(ev.pos):
-        #             gamestate = 1
-
+        if gamestate == 0:
+            start_button_rect = draw_main_menu(mainSurface, bg_home, menu_font, instructfont)
+            ev = pygame.event.poll()
+            if ev.type == pygame.QUIT:
+                 return
+            if ev.type == pygame.KEYDOWN:
+                if ev.key == pygame.KEYDOWN:
+                    gamestate = 1
+            if ev.type == pygame.MOUSEBUTTONDOWN:
+                if start_button_rect.collidepoint(ev.pos):
+                    gamestate = 1
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
     
@@ -349,16 +350,19 @@ def main():
                 clock.tick(60)
             
         if gamestate == 2:
-            score_text = font.render(f'Score: {score}', True, (255, 255, 255))
             mainSurface.fill((255, 20, 10))
-            pygame.display.flip()
-            print("dead")
+            replay_button = draw_main_menu(mainSurface, bg_home, menu_font, instructfont)
+            score_text = scorefont.render(f'Score: {score}', True, (255, 255, 255))
+            if ev.type == pygame.MOUSEBUTTONDOWN:
+                if replay_button.collidepoint(ev.pos):
+                    gamestate = 1
             ev = pygame.event.poll()    # Look for any event
             if ev.type == pygame.QUIT:  # Window close button clicked?
                 break
             if ev.type == pygame.KEYDOWN:
                 if ev.key == pygame.K_ESCAPE:
                     break
+            pygame.display.flip()
             #For now it just kills it, yana do death screen. 
         if gamestate == 4:
             break
