@@ -20,6 +20,7 @@ class moving_entity():
         self.direction = 0
         self.max_speed = max_speed
         self.mouse_held = False 
+        self.dead = False
         # If there's a sprite path, load the sprite
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
@@ -60,6 +61,7 @@ class enemy():
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
         else:
             pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
+    
 
 # platform class
 class Platform():
@@ -280,13 +282,19 @@ def main():
                 entity.render(mainSurface)
                 updateObjects(entity, delta_time, objects)
                 entity.movementBehaviour(entity.originalX, entity.maxDist)
-                
+            for en in activeEntities:
+                checkBullet(en,bullets_group,player,activeEntities)
             pygame.display.flip()
             clock.tick(60)
 
     pygame.quit()     # Once we leave the loop, close the window.
 
-
+def checkBullet(self,bullet,player,enemylist):
+    if self.rect.colliderect(player.rect):
+        player.dead = True
+    for bul in bullet:
+        if self.rect.colliderect(bul.rect):
+            enemylist.remove(self)
 def render(object, screen):
     if object.sprite:
         screen.blit(object.sprite, (object.rect.x, object.rect.y))
