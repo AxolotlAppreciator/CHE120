@@ -113,7 +113,7 @@ class Platform():
         if self.sprite:
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
         else:     
-            pygame.draw.rect(screen, colour, self.rect)
+            pygame.draw.rect(screen, colour, self.rect, border_radius=10)
     
     def respawn(self, screen_width, vertical_gap, highest_y):
         self.rect.x = random.randint(0, screen_width - self.rect.width)
@@ -195,7 +195,7 @@ def main():
     #List of all active objects on the screen
     objects = []
     Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-    first_platform = Platform(300,600,100,10) ## ivy has 600 for mac
+    first_platform = Platform(300,600,100,20) ## ivy has 600 for mac
     objects.append(first_platform)
 
     #placeholder enemy
