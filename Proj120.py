@@ -3,12 +3,12 @@ import pygame
 import random
 import time
 import math
-from pygame import mixer 
-mixer.init() 
-mixer.music.load("song.mp3") 
-mixer.music.set_volume(0.7) 
-mixer.music.play() 
-pygame.display.set_caption("Chill Jump")
+# from pygame import mixer 
+# mixer.init() 
+# mixer.music.load("song.mp3") 
+# mixer.music.set_volume(0.7) 
+# mixer.music.play() 
+# pygame.display.set_caption("Chill Jump")
 ## font = pygame.font.SysFont(None,25) ## change to comic sans and pick sizing and whatnot
 
 #Instantiate a new player entity
@@ -90,7 +90,7 @@ class enemy():
 
 # platform class
 class Platform():
-    def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None, first = False):
+    def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None, speed = 0, first = False):
         self.rect = pygame.Rect(x ,y ,width,height)
         self.sprite = None
         self.type = platform_type
@@ -104,7 +104,10 @@ class Platform():
             self.sprite = pygame.transform.scale(self.sprite, (width, height))
 
     def get_platform_colour(self):
-        if self.type == "regular":
+        # this could be made into a switch case
+        if self.first:
+            return (0, 0, 0) ## black for the first
+        if self.type == "regular" and not self.first:
             return (0, 255, 0)  # Green for regular
         elif self.type == "breaking":
             return (255, 0, 0)  # Red for breakable
@@ -156,6 +159,7 @@ class Platform():
         self.timer = 0
         vertical_gap = 175
 
+
     def generate_platforms(objects, num_platforms, screen_width, screen_height):
         platform_width = 100
         platform_height = 20
@@ -175,6 +179,9 @@ class Platform():
             objects.append(new_platform)
             y_position -= vertical_gap
 
+    def platform_generation_collision():
+        pass
+
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction, speed):
         super().__init__()
@@ -193,7 +200,18 @@ class Bullet(pygame.sprite.Sprite):
         # Kill bullet if the bullet goes off-screen
         if not self.rect.colliderect(pygame.Rect(0, 0, pygame.display.get_surface().get_width(), pygame.display.get_surface().get_height())):
             self.kill()  # Remove the bullet from the sprite group
-    
+def update_first_platform(objects, player):
+    first_platform = None
+    for obj in objects:
+        if isinstance(obj, Platform):
+            if first_platform is None or obj.rect.y < first_platform.rect.y:
+                first_platform = obj
+    # Mark the highest platform as 'first'
+    for obj in objects:
+        if isinstance(obj, Platform):
+            obj.first = (obj == first_platform)
+    return first_platform
+
 def main():
     #-----------------------------Setup------------------------------------------------------#
     """ Set up the game and run the main game loop """
@@ -261,31 +279,37 @@ def main():
             bullets_group.draw(mainSurface)  # Draw all bullets
             if player.dead == True:
                 gamestate = 2
-            updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
-            updateObjects(player, delta_time, objects)           # Update X-axis movement
-            handle_collisions(player, objects)
-            score = score + 1
+            first_platform = update_first_platform(objects, player)
+
+    # Calculate the score
+            if first_platform:
+                score = max(0, surfaceSize - first_platform.rect.y-1755)
             score_text = font.render(f'Score: {score}', True, (255, 255, 255))
             mainSurface.blit(score_text, (10, 10))  
 
+            updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
+            updateObjects(player, delta_time, objects)           # Update X-axis movement
+            handle_collisions(player, objects)
             highest_y = min(obj.rect.y for obj in objects if isinstance(obj, Platform))
             for obj in objects:
                 if isinstance(obj, Platform):
                     obj.moving(surfaceSize) 
                     obj.render(mainSurface)    
-                    if obj.rect.y > 1400 and not obj.first:
+                    if obj.rect.y > 1400:
                         Platform.respawn(obj, surfaceSize, 175, highest_y) 
+                        if random.random() < 0.25:
+                            print("trying to spawn a new enemy")
+                        #    new_enemy = enemy.respawn(obj, surfaceSize, 175, highest_y)
+                        #    if new_enemy is not None:
+                       #         active_entities.append(new_enemy)
             for obj in objects:
                 obj.render(mainSurface)
                 if obj.type == "breaking" and obj.timer != 0:
                     print(obj.timer)
                     obj.timer -= delta_time
-                    if obj.timer <= 0 and not obj.first:
+                    if obj.timer <= 0:
                         Platform.respawn(obj, surfaceSize, 175, highest_y)
             player.render(mainSurface)
-
-            if obj.first:  # Check if the platform is the first one
-                print(f"First platform position: x={obj.rect.x}, y={obj.rect.y}")
 
             #-----------------------------Drawing Everything-------------------------------------#
             # We draw everything from scratch on each frame.
@@ -341,7 +365,6 @@ def handle_collisions(self, objects):
                     if obj.type == "breaking":
                         print("starting breakage")
                         obj.timer = 1.5
-                        print(obj.timer)
     if self.lastTouched:
         if self.lastTouched.left > self.rect.right:
             self.grounded = False
