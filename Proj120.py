@@ -86,18 +86,26 @@ class enemy():
 class Platform():
     def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None, first = False):
         self.rect = pygame.Rect(x ,y ,width,height)
-        self.sprite = None
         self.type = platform_type
         self.speed = 0 if platform_type != "moving" else random.randint(1, 3)
         self.timer = 0 # timer for breaking platforms
         self.active = True # breaking platforms will deactivate after breaking
         self.first = first
         
+        if platform_type == "regular":
+            spritePath = "images/grassplatform.png"
+        elif platform_type == "breaking":
+            spritePath = "images/breaking.png"
+        elif platform_type == "moving":
+            spritePath = "images/clouds.png"
+
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite, (width, height))
+        else:
+            self.sprite = None
 
-    def get_platform_image(self):
+    def get_platform_colour(self):
         if self.type == "regular":
             return (0, 255, 0)  # Green for regular
         elif self.type == "breaking":
@@ -105,16 +113,7 @@ class Platform():
         elif self.type == "moving":
             return (0, 0, 255)  # Blue for moving
         return (255, 255, 255)  # Default to white if unknown
-        
-    def get_platform_sprite(self):
-        self.sprite = None
-        if self.type == "regular":
-            self.sprite = "images/grassplatform.png"  # Green for regular
-        elif self.type == "breaking":
-            self.sprite = "images/breaking.png"  # Red for breakable
-        elif self.type == "moving":
-            self.sprite = "images/clouds.png"  # Blue for moving
-        
+
     # horizontal moving platform
     def moving(self, screen_width):
         if self.type == "moving" and self.active:
@@ -141,12 +140,10 @@ class Platform():
     
 
     def render(self, screen):
-        colour = self.get_platform_image() if self.active else (128, 128, 128) # grey = inactive
-        plat_sprite = self.sprite
-
-        if self.sprite:
+        if self.sprite and self.active
             screen.blit(plat_sprite, (self.rect.x, self.rect.y))
-        else:     
+        else:
+            colour = self.get_platform_image() if self.active else (128, 128, 128) # grey = inactive
             pygame.draw.rect(screen, colour, self.rect, border_radius=10)
     
     def respawn(self, screen_width, vertical_gap, highest_y):
