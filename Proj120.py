@@ -68,8 +68,10 @@ class enemy():
             self.rect.x += math.cos(self.theta)*3
             self.rect.y += math.sin(self.theta)*3
         elif self.type == "following":
-            directionVector = player.rect.normalize()
-            self.rect += directionVector
+            dir = math.hypot(player.rect.x, player.rect.y)
+            directionVector = pygame.Vector2(dir).normalize()
+            self.rect.x += directionVector.x * delta_time * 300
+            self.rect.y -= directionVector.y * delta_time * 300
 
     def render(self, screen):
         if self.sprite:
@@ -328,7 +330,7 @@ def checkBullet(self,bullet,player,enemylist):
 def respawn(screen_width, vertical_gap, highest_y,activeEntities):
         #enemy2 = enemy(200,300,50,75,100,spritePath = "images/enemy.png",enemy_type="spinning")
         movement_types = ["moving", "spinning","following"]
-        probabilities = [0.7, 0.2,0.1]
+        probabilities = [0.5, 0.2,0.3]
         typez = random.choices(movement_types, probabilities)[0]
         xpos = random.randint(0, screen_width)
         ypos = highest_y - vertical_gap
