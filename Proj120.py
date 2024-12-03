@@ -201,8 +201,8 @@ def draw_main_menu(screen, image, font1, font2):
     start_button_rect = start_button.get_rect(center=(580 // 2, 580 // 2 + 100))
     screen.blit(start_button, start_button_rect)
 
-    instructions = font2.render('press start or any key to play', True, (200,200,200))
-    screen.blit(instructions, (50, 440))
+    instructions = font2.render('press start or any key to play', True, (210,210,210))
+    screen.blit(instructions, (70, 440))
 
     pygame.display.flip()
     return start_button_rect
@@ -219,7 +219,7 @@ def main():
     bg_home = pygame.image.load('images/bghome.png')
     bg_home = pygame.transform.scale(bg_home, (surfaceSize, surfaceSize))
     menu_font = pygame.font.Font("fonts/Super Childish.ttf", 70)
-    instructfont = pygame.font.Font("fonts/CHICKEN Pie.ttf", 70)
+    instructfont = pygame.font.Font("fonts/CHICKEN Pie.ttf", 30)
     clouds = pygame.image.load('images/clouds.png')
     clouds = pygame.transform.scale(clouds, (surfaceSize, surfaceSize))
     clock = pygame.time.Clock()
