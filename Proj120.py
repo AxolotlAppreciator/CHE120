@@ -70,6 +70,19 @@ class enemy():
         else:
             pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
     
+    def respawn(self, screen_width, vertical_gap, highest_y):
+        self.rect.x = random.randint(0, screen_width - self.rect.width)
+        self.rect.y = highest_y - vertical_gap
+        movement_types = ["moving", "spinning"]
+        probabilities = [0.7, 0.3]
+        self.type = random.choices(movement_types, probabilities)[0]
+        self.velocity = pygame.Vector2(0, 0) if self.type != "moving" else random.randint(1, 5) * random.choice([-1, 1])
+        self.active = True
+        self.timer = 0
+        self.maxDist = random.randint(100, 300)
+
+    def update(self, delta_time):
+        self.movementBehaviour(self.originalX, self.maxDist, delta_time)
 
 # platform class
 class Platform():
@@ -204,7 +217,7 @@ def main():
 
     #List of all active objects on the screen
     objects = []
-    Platform.generate_platforms(objects, 5, surfaceSize, surfaceSize)
+    Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
     first_platform = Platform(300, 600, 100, 20)  # "regular", spritePath = None, speed = 0, first=True
     objects.append(first_platform)
 
@@ -263,6 +276,19 @@ def main():
                     obj.render(mainSurface)    
                     if obj.rect.y > 1400:
                         Platform.respawn(obj, surfaceSize, 175, highest_y) 
+                        if random.random() < 0.25:
+                            new_enemy = enemy.respawn(obj, surfaceSize, 175, highest_y)
+                            if new_enemy is not None:
+                                objects.append(new_enemy)
+            for obj in objects:
+                if obj is not None and hasattr(obj, "render"):
+                    obj.render(mainSurface)
+                if obj.type == "breaking" and obj.timer != 0:
+                    print(obj.timer)
+                    obj.timer -= delta_time
+                    if obj.timer <= 0:
+                        Platform.respawn(obj, surfaceSize, 175, highest_y)
+            player.render(mainSurface)
 
         #-----------------------------Drawing Everything-------------------------------------#
         # We draw everything from scratch on each frame.
@@ -270,16 +296,9 @@ def main():
         
 
         # Rendering and updating objects and entities ->
-            player.render(mainSurface) ## why is there two lol
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])  # Clear the screen
-            for obj in objects:
-                obj.render(mainSurface)
-                if obj.type == "breaking" and obj.timer != 0:
-                    print(obj.timer)
-                    obj.timer -= delta_time
-                    if obj.timer <= 0:
-                        Platform.respawn(obj, surfaceSize, 175, highest_y)
+            
 
             for entity in activeEntities:
                 entity.render(mainSurface)
@@ -289,6 +308,7 @@ def main():
                 checkBullet(en,bullets_group,player,activeEntities)
             pygame.display.flip()
             clock.tick(60)
+            
         if gamestate == 2:
             pygame.quit() 
             print("dead")
