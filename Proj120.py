@@ -69,17 +69,6 @@ class enemy():
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
         else:
             pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
-    
-    def respawn(self, screen_width, vertical_gap, highest_y):
-        self.rect.x = random.randint(0, screen_width - self.rect.width)
-        self.rect.y = highest_y - vertical_gap
-        movement_types = ["moving", "spinning"]
-        probabilities = [0.7, 0.3]
-        self.type = random.choices(movement_types, probabilities)[0]
-        self.velocity = pygame.Vector2(0, 0) if self.type != "moving" else random.randint(1, 5) * random.choice([-1, 1])
-        self.active = True
-        self.timer = 0
-        self.maxDist = random.randint(100, 300)
 
     def update(self, delta_time):
         self.movementBehaviour(self.originalX, self.maxDist, delta_time)
@@ -154,6 +143,7 @@ class Platform():
         self.active = True
         self.timer = 0
         vertical_gap = 175
+
 
     def generate_platforms(objects, num_platforms, screen_width, screen_height):
         platform_width = 100
@@ -277,14 +267,16 @@ def main():
                     obj.render(mainSurface)    
                     if obj.rect.y > 1400:
                         Platform.respawn(obj, surfaceSize, 175, highest_y) 
-                       # if random.random() < 0.25:
-                        #    new_enemy = enemy.respawn(obj, surfaceSize, 175, highest_y)
-                        #    if new_enemy is not None:
-                       #         active_entities.append(new_enemy)
+                        if random.random() < 0.25 + score / 10000:
+                            print("trying to spawn a new enemy")
+                            respawn(surfaceSize, 175, highest_y,activeEntities)
+                        if score > 5000:
+                           respawn(surfaceSize, 175, highest_y,activeEntities)
+
+
             for obj in objects:
                 obj.render(mainSurface)
                 if obj.type == "breaking" and obj.timer != 0:
-                    print(obj.timer)
                     obj.timer -= delta_time
                     if obj.timer <= 0:
                         Platform.respawn(obj, surfaceSize, 175, highest_y)
@@ -321,6 +313,31 @@ def checkBullet(self,bullet,player,enemylist):
     for bul in bullet:
         if self.rect.colliderect(bul.rect):
             enemylist.remove(self)
+
+
+
+def respawn(screen_width, vertical_gap, highest_y,activeEntities):
+        #enemy2 = enemy(200,300,50,75,100,spritePath = "images/enemy.png",enemy_type="spinning")
+        movement_types = ["moving", "spinning"]
+        probabilities = [0.7, 0.3]
+        typez = random.choices(movement_types, probabilities)[0]
+        xpos = random.randint(0, screen_width)
+        ypos = highest_y - vertical_gap
+        wid = 50
+        hei = 70
+        mDist = 100
+        en = enemy(xpos,ypos,wid,hei,mDist,spritePath = "images/enemy.png",enemy_type = typez)
+        activeEntities.append(en)
+        #self.rect.x = random.randint(0, screen_width - self.rect.width)
+       # self.rect.y = highest_y - vertical_gap
+        #movement_types = ["moving", "spinning"]
+        #probabilities = [0.7, 0.3]
+        #self.type = random.choices(movement_types, probabilities)[0]
+        #self.velocity = pygame.Vector2(0, 0) if self.type != "moving" else random.randint(1, 5) * random.choice([-1, 1])
+        #self.active = True
+        #self.timer = 0
+        #self.maxDist = random.randint(100, 300)
+        #print(f"respawning enemy with type{self.type}")
 def render(object, screen):
     if object.sprite:
         screen.blit(object.sprite, (object.rect.x, object.rect.y))
@@ -344,7 +361,6 @@ def handle_collisions(self, objects):
                     if obj.type == "breaking":
                         print("starting breakage")
                         obj.timer = 1.5
-                        print(obj.timer)
     if self.lastTouched:
         if self.lastTouched.left > self.rect.right:
             self.grounded = False
