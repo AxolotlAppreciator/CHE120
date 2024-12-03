@@ -1,31 +1,42 @@
-'''See PyGame Events documentation for a list of the events built into pygame: https://www.pygame.org/docs/ref/event.html '''
+## CHE 120 Final Project - Chill Jump
+## By Gabriella Kim, Ivy Nguyen, Yana Petcheva, Sebastien Tremblay
+
+# import modules
 import pygame
 import random
 import time
 import math
 from pygame import mixer 
 
+# add background music
 # mixer.init() 
 # mixer.music.load("audio/song.mp3") 
 # mixer.music.set_volume(0.7) 
 # mixer.music.play() 
 
-#Instantiate a new player entity
-class moving_entity():     
+# Instantiate a new player entity
+class moving_entity():
+    '''
+    
+    
+    
+    
+    '''     
     def __init__(self,x, y, width, height, max_speed, deceleration_rate, spritePath=None):
-        self.rect = pygame.Rect(x,y,width,height)
-        self.velocity = pygame.Vector2(0,0)
-        self.acceleration = pygame.Vector2(0,0)
-        self.deceleration_rate = deceleration_rate
-        self.sprite = None
-        self.grounded = False
-        self.accelerating = False
-        self.direction = 0
-        self.max_speed = max_speed
-        self.mouse_held = False 
-        self.dead = False
-        self.lastTouched = None
-        self.type = None
+        self.rect = pygame.Rect(x,y,width,height) # the entity's rectangle
+        self.velocity = pygame.Vector2(0,0) # the current velocity
+        self.acceleration = pygame.Vector2(0,0) # the current acceleration
+        self.deceleration_rate = deceleration_rate # the deceleration rate
+        self.sprite = None # the entity sprite
+        self.grounded = False # whether the entity is grounded
+        self.accelerating = False # whether the entity is accelerating
+        self.direction = 0 # the direction that the entity faces where left = -1 and right = 1
+        self.max_speed = max_speed # the entity's max speed
+        self.mouse_held = False # whether the mouse click is held
+        self.dead = False # the death status of the entity
+        self.lastTouched = None # the last platform or entity that it has last interacted with
+        self.type = None # type of entity
+
         # If there's a sprite path, load the sprite
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
@@ -35,12 +46,20 @@ class moving_entity():
         self.sprite_left = pygame.transform.flip(self.sprite, True, False)  # Flip horizontally
     
     def render(self, screen):
+        '''
+        
+        
+        '''
         if self.sprite:
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
         else:
-            pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
+            pygame.draw.rect(screen, (0, 255, 0), self.rect)  # default to generating a green rectangle if there is no existing sprite
 
 class enemy():
+    '''
+    
+    
+    '''
     def __init__(self,x,y,width,height,maxDist, enemy_type = "moving", spritePath = None):
         self.rect = pygame.Rect(x,y,width,height)
         self.sprite = None
@@ -92,14 +111,16 @@ class Platform():
         self.active = True # breaking platforms will deactivate after breaking
         self.first = first
         
+        # 
         if platform_type == "regular":
             spritePath = "images/grassplatform.png"
         elif platform_type == "breaking":
             spritePath = "images/breaking.png"
         elif platform_type == "moving":
-            spritePath = "images/clouds.png"
+            spritePath = "images/moving.png"
 
-        if spritePath:
+        # if a spritePath exists, it will load it
+        if spritePath: 
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite, (width, height))
         else:
@@ -177,6 +198,11 @@ class Platform():
             y_position -= vertical_gap
 
 class Bullet(pygame.sprite.Sprite):
+    '''
+    
+    
+    
+    '''
     def __init__(self, x, y, direction, speed):
         super().__init__()
         self.image = pygame.Surface((10, 5))  
