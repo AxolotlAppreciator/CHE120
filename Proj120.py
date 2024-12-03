@@ -200,6 +200,7 @@ def main():
 
     font = pygame.font.Font(None, 36)
     player = moving_entity(300,375,75,100,290,0.85,"images/player.png")
+    clouds = pygame.image.load('images/clouds.png')
     player.velocity.y = 497
 
     #List of all active objects on the screen
@@ -225,7 +226,9 @@ def main():
         
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
-    
+        if gamestate == 0:
+            mainSurface.fill((53, 80, 112))
+            mainSurface.blit(clouds, (0, 0))  
         if gamestate == 1:
             delta_time = clock.get_time() / 1000 # Time since last frame
             #-----------------------------Event Handling-----------------------------------------#
@@ -236,6 +239,7 @@ def main():
                 if ev.key == pygame.K_ESCAPE:
                     break
             mainSurface.fill((53, 80, 112))
+            mainSurface.blit(clouds, (0, 0)) 
             bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
             for bullet in bullets_group:
                 bullet.update(objects)
