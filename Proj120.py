@@ -243,25 +243,26 @@ def main():
             if ev.type == pygame.KEYDOWN:
                 if ev.key == pygame.K_ESCAPE:
                     break
+            #check for dead player
+            if player.dead == True:
+                gamestate = 2
+            #temp score
+            score = score + 1
+            score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+
+            #clears main surface
             mainSurface.fill((53, 80, 112))
+
+
+
+             #||-----Updating objects and detecting collision between the player and the environment-----||
             bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
             for bullet in bullets_group:
                 bullet.update(objects)
-            #print(player.velocity.y)
             checkPlayerInput(player, delta_time, 200, objects, bullets_group)
-            #for obj in objects:
-            #    if player.rect.y > obj.rect.y + 60:
-            #        player.rect.y += 500 * delta_time
-            #    else:
-            #        player.rect.y = 300
-            bullets_group.draw(mainSurface)  # Draw all bullets
-            if player.dead == True:
-                gamestate = 2
             updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
             updateObjects(player, delta_time, objects)           # Update X-axis movement
             handle_collisions(player, objects)
-            score = score + 1
-            score_text = font.render(f'Score: {score}', True, (255, 255, 255))
             mainSurface.blit(score_text, (10, 10))  
 
             highest_y = min(obj.rect.y for obj in objects if isinstance(obj, Platform))
@@ -269,36 +270,26 @@ def main():
                 if isinstance(obj, Platform):
                     obj.moving(surfaceSize) 
                     obj.render(mainSurface)    
-                    if obj.rect.y > 1400 and not obj.first:
+                    if obj.rect.y > 1400:
                         Platform.respawn(obj, surfaceSize, 175, highest_y) 
             for obj in objects:
                 obj.render(mainSurface)
                 if obj.type == "breaking" and obj.timer != 0:
-                    print(obj.timer)
                     obj.timer -= delta_time
-                    if obj.timer <= 0 and not obj.first:
+                    if obj.timer <= 0:
                         Platform.respawn(obj, surfaceSize, 175, highest_y)
             player.render(mainSurface)
 
-            if obj.first:  # Check if the platform is the first one
-                print(f"First platform position: x={obj.rect.x}, y={obj.rect.y}")
-
-            #-----------------------------Drawing Everything-------------------------------------#
-            # We draw everything from scratch on each frame.
-            # So first fill everything with the background color
-            
-
-        # Rendering and updating objects and entities ->
-        #-----------------------------Program Logic---------------------------------------------#
-        # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])  # Clear the screen
-            
-
+            #||-----Drawing Everything-----||
+            #(also includes some entity behaviour for brievity)
+            bullets_group.draw(mainSurface)  # Draw all bullets
             for entity in activeEntities:
                 entity.render(mainSurface)
                 updateObjects(entity, delta_time, objects)
                 entity.movementBehaviour(entity.originalX, entity.maxDist, delta_time)
             for en in activeEntities:
                 checkBullet(en,bullets_group,player,activeEntities)
+
             pygame.display.flip()
             clock.tick(60)
             
@@ -308,19 +299,42 @@ def main():
             #For now it just kills it, yana do death screen. 
     pygame.quit()     # Once we leave the loop, close the window.
 
+
+
+
 def checkBullet(self,bullet,player,enemylist):
+    #Checks if either a bullet comes into contact with the player or if an enemy comes into contact with a bullet
+    #@param1: self -> The container of the enemy
+    #@param2: bullet -> the list of bullets actively on screen
+    #@param3: player -> the player
+    #@param4: enemylist -> The list of entities actively on screen
     if self.rect.colliderect(player.rect):
         player.dead = True
     for bul in bullet:
         if self.rect.colliderect(bul.rect):
             enemylist.remove(self)
-def render(object, screen):
+
+
+
+
+def render(object, screen):#
+    #Renders an object onto the screen
+    #@param object: the object to be rendered
+    #@param screen: the screen the object is rendered on
+    #@Return none
     if object.sprite:
         screen.blit(object.sprite, (object.rect.x, object.rect.y))
     else:
         pygame.draw.rect(screen, (255, 0, 0), object.rect)  # Placeholder red rectangle
 
+
+
 def handle_collisions(self, objects):
+
+    #Handles the collision logic between two objects
+    #@param self: the first object (typically the player)
+    #@param objects: the list of all objects or the list of entities actively on screen
+
     for obj in objects:
 
         if self.rect.colliderect(obj.rect):
