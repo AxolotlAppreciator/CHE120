@@ -83,7 +83,7 @@ class Platform():
         # this could be made into a switch case
         if self.first:
             return (0, 0, 0) ## black for the first
-        if self.type == "regular":
+        if self.type == "regular" and not self.first:
             return (0, 255, 0)  # Green for regular
         elif self.type == "breaking":
             return (255, 0, 0)  # Red for breakable
@@ -93,7 +93,7 @@ class Platform():
         
     # horizontal moving platform
     def moving(self, screen_width):
-        if self.type == "moving" and self.active and not self.first:
+        if self.type == "moving" and self.active:
             self.rect.x += self.speed
             # change directions after hitting the edges of the screen
             if self.rect.left <= 0 or self.rect.right >= screen_width:
@@ -202,7 +202,7 @@ def main():
     #List of all active objects on the screen
     objects = []
     Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-    first_platform = Platform(300, 600, 100, 20, "regular", None, True) 
+    first_platform = Platform(300, 600, 100, 20)  # "regular", spritePath = None, speed = 0, first=True
     objects.append(first_platform)
 
     #placeholder enemy
