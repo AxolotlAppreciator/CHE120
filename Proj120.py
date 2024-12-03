@@ -141,9 +141,9 @@ class Platform():
 
     def render(self, screen):
         if self.sprite and self.active
-            screen.blit(plat_sprite, (self.rect.x, self.rect.y))
+            screen.blit(self.sprite, (self.rect.x, self.rect.y))
         else:
-            colour = self.get_platform_image() if self.active else (128, 128, 128) # grey = inactive
+            colour = self.get_platform_colour() if self.active else (128, 128, 128) # grey = inactive
             pygame.draw.rect(screen, colour, self.rect, border_radius=10)
     
     def respawn(self, screen_width, vertical_gap, highest_y):
