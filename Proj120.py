@@ -22,7 +22,6 @@ class moving_entity():
         self.mouse_held = False 
         self.dead = False
         self.lastTouched = None
-        self.type = None
         # If there's a sprite path, load the sprite
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
@@ -30,12 +29,30 @@ class moving_entity():
 
         # Create a flipped version of the sprite for facing left
         self.sprite_left = pygame.transform.flip(self.sprite, True, False)  # Flip horizontally
-    
     def render(self, screen):
         if self.sprite:
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
         else:
-            pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
+            pygame.draw.rect(screen, (0, 255, 0), self.rect)
+
+def render_text(text, font, color, position, screen):
+    rendered_text = font.render(text, True, color)
+    screen.blit(rendered_text, position)
+
+def draw_menu(screen, font):
+    screen.fill((53, 80, 112))  # Set background color
+    render_text("Chill Jump", font, (255, 255, 255), (200, 150), screen)  # Title
+    render_text("Press SPACE to Start", font, (255, 255, 255), (180, 250), screen)  # Instructions
+    render_text("Press ESC to Quit", font, (255, 255, 255), (180, 300), screen)  # Instructions
+    pygame.display.update()
+
+def draw_death_screen(screen, font, score):
+    screen.fill((53, 80, 112))  # Set background color
+    render_text("Game Over", font, (255, 0, 0), (200, 150), screen)  # Game Over message
+    render_text(f"Score: {score}", font, (255, 255, 255), (220, 200), screen)  # Score
+    render_text("Press SPACE to Restart", font, (255, 255, 255), (160, 250), screen)  # Restart instruction
+    render_text("Press ESC to Quit", font, (255, 255, 255), (180, 300), screen)  # Quit instruction
+    pygame.display.update()
 
 class enemy():
     def __init__(self,x,y,width,height,maxDist, enemy_type = "moving", spritePath = None):
@@ -213,6 +230,7 @@ def main():
 
     font = pygame.font.Font(None, 36)
     player = moving_entity(300,375,75,100,290,0.85,"images/player.png")
+    clouds = pygame.image.load('images/clouds.png')
     player.velocity.y = 497
 
     #List of all active objects on the screen
@@ -228,7 +246,7 @@ def main():
 
     #List of active entities that get updated each frame
     activeEntities = [enemy1,enemy2]
-    gamestate = 1
+    gamestate = 0
     score = 0
     bullets_group = pygame.sprite.Group()
 
@@ -238,8 +256,22 @@ def main():
         
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
-    
-        if gamestate == 1:
+        ev = pygame.event.poll()
+        if ev.type == pygame.QUIT:
+            pygame.quit()
+            break
+        if gamestate == 0:
+            draw_menu(mainSurface, font)
+            mainSurface.fill((53, 80, 112))
+            mainSurface.blit(clouds, (0, 0))  
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_SPACE]:
+                gamestate = 1  # Start the game when Space is pressed
+            elif keys[pygame.K_ESCAPE]:
+                pygame.quit()
+                break
+        
+        elif gamestate == 1:
             delta_time = clock.get_time() / 1000 # Time since last frame
             #-----------------------------Event Handling-----------------------------------------#
             ev = pygame.event.poll()    # Look for any event
@@ -249,6 +281,7 @@ def main():
                 if ev.key == pygame.K_ESCAPE:
                     break
             mainSurface.fill((53, 80, 112))
+            mainSurface.blit(clouds, (0, 0)) 
             bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
             for bullet in bullets_group:
                 bullet.update(objects)
@@ -310,8 +343,15 @@ def main():
             clock.tick(60)
             
         if gamestate == 2:
-            pygame.quit() 
-            print("dead")
+            draw_death_screen(mainSurface, font, score)
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_SPACE]:
+                main()  # Restart the game when Space is pressed
+            elif keys[pygame.K_ESCAPE]:
+                pygame.quit()
+                break
+            pygame.display.flip()
+            clock.tick(60)
             #For now it just kills it, yana do death screen. 
     pygame.quit()     # Once we leave the loop, close the window.
 
@@ -435,4 +475,5 @@ def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
        
     return bullets_group
                 
-main()
+if __name__ == "__main__":
+    main()
