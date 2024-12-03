@@ -7,12 +7,14 @@ import random
 import time
 import math
 from pygame import mixer 
+import os
+import os.path
 
 # add background music
-# mixer.init() 
-# mixer.music.load("audio/song.mp3") 
-# mixer.music.set_volume(0.7) 
-# mixer.music.play() 
+mixer.init() 
+mixer.music.load("audio/song.mp3") 
+mixer.music.set_volume(0.7) 
+mixer.music.play(-1) 
 
 # Instantiate a new player entity
 class moving_entity():
@@ -264,7 +266,9 @@ def main():
     grass = pygame.image.load('images/grassplatform.png')
     breaking = pygame.image.load('images/breaking.png')
     moving = pygame.image.load('images/moving.png')
-
+    music = 1
+    path = './music.txt'
+    checkFile = os.path.isfile(path)
     # Create surface of (width, height), and its window.
     mainSurface = pygame.display.set_mode((surfaceSize, surfaceSize))
     scorefont = pygame.font.Font("fonts/Comic Sans MS.ttf", 36)
@@ -275,8 +279,21 @@ def main():
     
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
-        
+#         Music Control
+        if music == 1:
+            filew = open('music.txt', 'w')
+            filew.write(f'{music}')
+            filew.close()
+#         Music
         if gamestate == 0:
+            if checkFile == True:
+                filer = open('music.txt', 'r')
+                valuemusic = int(filer.readline())
+                pygame.mixer.music.load("audio/song.mp3")
+                pygame.mixer.music.set_volume(0.1*valuemusic)
+                pygame.mixer.music.play(-1, 0.0)
+            else:
+                pygame.mixer.music.set_volume(0.1)
             start_button_rect = draw_main_menu(mainSurface, bg_home, menu_font, instructfont)
             ev = pygame.event.poll()
             if ev.type == pygame.QUIT:
