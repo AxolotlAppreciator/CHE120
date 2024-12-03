@@ -1,7 +1,7 @@
 ## CHE 120 Final Project - Chill Jump
 ## By Gabriella Kim, Ivy Nguyen, Yana Petcheva, Sebastien Tremblay
 
-# import modules
+# Import modules
 import pygame
 import random
 import time
@@ -32,7 +32,7 @@ class moving_entity():
         self.sprite = None # the entity sprite
         self.grounded = False # whether the entity is grounded
         self.accelerating = False # whether the entity is accelerating
-        self.direction = 0 # the direction that the entity faces where left = -1 and right = 1
+        self.direction = 0 # the direction of movement that the entity faces where left = -1 and right = 1
         self.max_speed = max_speed # the entity's max speed
         self.mouse_held = False # whether the mouse click is held
         self.dead = False # the death status of the entity
@@ -63,21 +63,35 @@ class enemy():
     
     '''
     def __init__(self,x,y,width,height,maxDist, enemy_type = "moving", spritePath = None):
-        self.rect = pygame.Rect(x,y,width,height)
-        self.sprite = None
-        self.type = enemy_type
-        self.accelerating = True
-        self.max_speed = 500
-        self.direction = 0
-        self.velocity = pygame.Vector2(0,0)
-        self.maxDist = maxDist
-        self.originalX = x
-        self.theta = 0
+        self.rect = pygame.Rect(x,y,width,height) # the enemy's rectangle
+        self.sprite = None # the enemy sprite
+        self.type = enemy_type # the enemy type
+        self.accelerating = True # the enemy acceleration, which sets it to always be true
+        self.max_speed = 500 # the enemy's maximunm direction
+        self.direction = 0 # the direction of movement that the enemy faces where left = -1 and right = 1
+        self.velocity = pygame.Vector2(0,0) # the current velocity
+        self.maxDist = maxDist # the maximum movement distance
+        self.originalX = x # the starting x position
+        self.theta = 0 # the angle for the enemy spinning direction
+
+        # 
+        if enemy_type == "moving":
+            spritePath = "images/enemy.png"
+        elif enemy_type == "spinning":
+            spritePath = "images/enemySpinning.png"
+        elif enemy_type == "following":
+            spritePath = "images/enemyChasing.png"
+
+        # If there's a sprite path, load the sprite
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite,(width+40,height))
 
     def movementBehaviour(self,originalX,maxDist,delta_time,player):
+        '''
+        
+        
+        '''
         if self.type == "moving":
             if self.rect.x > originalX + maxDist:
                 self.direction = -1
@@ -112,7 +126,7 @@ class Platform():
         self.timer = 0 # timer for breaking platforms
         self.active = True # breaking platforms will deactivate after breaking
         self.first = first
-        
+        print(f"new platform of type {self.type}")
         # 
         if platform_type == "regular":
             spritePath = "images/grassplatform.png"
@@ -186,7 +200,7 @@ class Platform():
         platform_types = ["regular", 'breaking', 'moving']
         probabilities = [0.7, 0.2, 0.1]
         vertical_gap = 175
-        y_position = 400
+        y_position = 600
         
         for _ in range(num_platforms):
             x = random.randint(0, screen_width - platform_width)
@@ -304,19 +318,22 @@ def main():
             if ev.type == pygame.MOUSEBUTTONDOWN:
                 if start_button_rect.collidepoint(ev.pos):
                     gamestate = 1
+
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
     
         if gamestate == 1:
-            #player = moving_entity(300,375,65,100,290,0.85,"images/player.png")
-            heightEntity = enemy(0,0,0,0,0,0,"images/player.png")
-           # player.velocity.y = 497
+            player = moving_entity(300,375,65,100,290,0.85,"images/player.png")
+            player.velocity.y = 0
+            print(player.velocity)
 
+            heightEntity = enemy(0,0,0,0,0,0,"images/player.png")
             #List of all active objects on the screen
             objects = []
-            Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-            first_platform = Platform(300, 600, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
+            first_platform = Platform(300, 1000, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
             objects.append(first_platform)
+            Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
+            
 
             #placeholder enemy
             #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
@@ -326,6 +343,7 @@ def main():
             bullets_group = pygame.sprite.Group()
 
             while gamestate == 1:
+
                 delta_time = clock.get_time() / 1000 # Time since last frame
                 #-----------------------------Event Handling-----------------------------------------#
                 ev = pygame.event.poll()    # Look for any event
@@ -343,10 +361,10 @@ def main():
                 #     score =  currentscore
 
                 # score_text = scorefont.render(f'Score: {score}', True, (255, 255, 255))
-                # if player.lastTouched and (player.rect.y > player.lastTouched.y + 600):
-                #     player.rect.y += 10
-                #     if player.rect.y >= 600:
-                #         gamestate = 2
+                if player.lastTouched and (player.rect.y > player.lastTouched.y + 600) and player.velocity.y > 2000:
+                    player.rect.y += 10
+                    if player.rect.y >= 600:
+                        gamestate = 2
                 #clears main surface
                 mainSurface.fill((53, 80, 112))
                 mainSurface.blit(clouds, (0, 0))
@@ -357,10 +375,10 @@ def main():
                 # bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
                 # for bullet in bullets_group:
                 #     bullet.update(objects)
-                # checkPlayerInput(player, delta_time, 200, objects, bullets_group)
-                # updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
-                # updateObjects(player, delta_time, objects)           # Update X-axis movement
-                # handle_collisions(player, objects)
+                checkPlayerInput(player, delta_time, 200, objects, bullets_group)
+                updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
+                updateObjects(player, delta_time, objects)           # Update X-axis movement
+                handle_collisions(player, objects)
                 # mainSurface.blit(score_text, (10, 10))  
 
                 highest_y = min(obj.rect.y for obj in objects if isinstance(obj, Platform))
@@ -382,7 +400,7 @@ def main():
                         obj.timer -= delta_time
                         if obj.timer <= 0:
                             Platform.respawn(obj, surfaceSize, 175, highest_y)
-                #player.render(mainSurface)
+                player.render(mainSurface)
 
                 #||-----Drawing Everything-----||
                 #(also includes some entity behaviour for brievity)
@@ -512,8 +530,7 @@ def updateY(self, delta_time, objects, entities):
     else:
         vertical_offset = 0
     for obj in objects:
-        if not obj.first:
-            obj.rect.y -= vertical_offset
+        obj.rect.y -= vertical_offset
     for entity in entities:
         entity.rect.y -= vertical_offset
 
@@ -531,10 +548,10 @@ def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
     
     # Jump logic
     if (keys[pygame.K_UP] or keys[pygame.K_w]) and player.grounded:
-        player.velocity.y = -1200  # Adjust jump strength
+        player.velocity.y = -700  # Adjust jump strength
         player.grounded = False  # Set player as airborne
     if not player.grounded:
-     player.velocity.y += 1300 * delta_time
+     player.velocity.y += 1200 * delta_time
         
     # Horizontal movement logic
     if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -570,6 +587,5 @@ def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
     if not mouse_buttons[0]:
         player.mouse_held = False
        
-    return bullets_group
-                
+    return bullets_group                
 main()
