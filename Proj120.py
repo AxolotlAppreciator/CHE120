@@ -22,6 +22,7 @@ class moving_entity():
         self.mouse_held = False 
         self.dead = False
         self.lastTouched = None
+        self.type = None
         # If there's a sprite path, load the sprite
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
@@ -77,10 +78,10 @@ class Platform():
         self.sprite = None
         self.type = platform_type
         self.speed = 0 if platform_type != "moving" else random.randint(1, 3)
-        self.timer = None # timer for breaking platforms
+        self.timer = 0 # timer for breaking platforms
         self.active = True # breaking platforms will deactivate after breaking
         self.first = first
-        
+
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite, (width, height))
@@ -136,7 +137,7 @@ class Platform():
         self.type = random.choices(platform_types, probabilities)[0]
         self.speed = 0 if self.type != "moving" else random.randint(1, 3)
         self.active = True
-        self.timer = None
+        self.timer = 0
         vertical_gap = 175
 
     def generate_platforms(objects, num_platforms, screen_width, screen_height):
@@ -272,6 +273,12 @@ def main():
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])  # Clear the screen
             for obj in objects:
                 obj.render(mainSurface)
+                if obj.type == "breaking" and obj.timer != 0:
+                    print(obj.timer)
+                    obj.timer -= delta_time
+                    if obj.timer <= 0:
+                        objects.remove(obj)
+
             for entity in activeEntities:
                 entity.render(mainSurface)
                 updateObjects(entity, delta_time, objects)
@@ -312,6 +319,10 @@ def handle_collisions(self, objects):
                     self.grounded = True
                     self.lastTouched = obj.rect
                     self.velocity.y = 0  # Reset vertical velocity when landing
+                    if obj.type == "breaking":
+                        print("starting breakage")
+                        obj.timer = 90
+                        print(obj.timer)
     if self.lastTouched:
         if self.lastTouched.left > self.rect.right:
             self.grounded = False
@@ -325,7 +336,6 @@ def updateObjects(self, delta_time, objects):
             self.velocity.x += self.direction * 15
     else:
         self.velocity.x *= self.deceleration_rate
-    
     if self.rect.x < -70:
         self.rect.x = 550
     elif self.rect.x > 560:
