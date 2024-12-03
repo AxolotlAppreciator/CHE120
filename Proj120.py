@@ -323,7 +323,7 @@ def handle_collisions(self, objects):
                     self.velocity.y = 0  # Reset vertical velocity when landing
                     if obj.type == "breaking":
                         print("starting breakage")
-                        obj.timer = 90
+                        obj.timer = 1.5
                         print(obj.timer)
     if self.lastTouched:
         if self.lastTouched.left > self.rect.right:
