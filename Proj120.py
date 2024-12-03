@@ -4,10 +4,10 @@ import random
 import time
 import math
 from pygame import mixer 
-mixer.init() 
-mixer.music.load("song.mp3") 
-mixer.music.set_volume(0.7) 
-mixer.music.play() 
+#mixer.init() 
+#mixer.music.load("song.mp3") 
+#mixer.music.set_volume(0.7) 
+#mixer.music.play() 
 pygame.display.set_caption("Chill Jump")
 ## font = pygame.font.SysFont(None,25) ## change to comic sans and pick sizing and whatnot
 
@@ -224,13 +224,11 @@ def main():
 
 
     font = pygame.font.Font(None, 36)
+    
+
 
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
-        
-        #-----------------------------Program Logic---------------------------------------------#
-        # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
-    
         if gamestate == 1:
             player = moving_entity(300,375,75,100,290,0.85,"images/player.png")
             player.velocity.y = 497
@@ -249,11 +247,6 @@ def main():
             activeEntities = []
             score = 0
             bullets_group = pygame.sprite.Group()
-
-
-    #-----------------------------Main Program Loop---------------------------------------------#
-    while True:
-        
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
     
