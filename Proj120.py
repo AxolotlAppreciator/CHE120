@@ -26,9 +26,9 @@ class moving_entity():
     '''     
     def __init__(self,x, y, width, height, max_speed, deceleration_rate, spritePath=None):
         self.rect = pygame.Rect(x,y,width,height) # the entity's rectangle
-        self.velocity = pygame.Vector2(0,0) # the current velocity
+        self.velocity = pygame.Vector2(0,0) # the current velocity 
         self.acceleration = pygame.Vector2(0,0) # the current acceleration
-        self.deceleration_rate = deceleration_rate # the deceleration rate
+        self.deceleration_rate = deceleration_rate # the deceleration rate for horizontal movement
         self.sprite = None # the entity sprite
         self.grounded = False # whether the entity is grounded
         self.accelerating = False # whether the entity is accelerating
@@ -176,7 +176,6 @@ class Platform():
             if elapsed_time >= 1.5:
                 self.active = False  # Platform disappears after 1.5 seconds
     
-
     def render(self, screen):
         if self.sprite and self.active:
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
@@ -201,7 +200,7 @@ class Platform():
         platform_types = ["regular", 'breaking', 'moving']
         probabilities = [0.7, 0.2, 0.1]
         vertical_gap = 175
-        y_position = 400
+        y_position = 600
         
         for _ in range(num_platforms):
             x = random.randint(0, screen_width - platform_width)
@@ -329,13 +328,10 @@ def main():
             #List of all active objects on the screen
             first_platform = Platform(300, 400, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
             objects = []
+            first_platform = Platform(300, 400, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
             objects.append(first_platform)
             Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
             
-
-            #placeholder enemy
-            #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
-
             #List of active entities that get updated each frame
             activeEntities = [heightEntity]
             bullets_group = pygame.sprite.Group()
@@ -381,7 +377,7 @@ def main():
                     if isinstance(obj, Platform):
                         obj.moving(surfaceSize) 
                         obj.render(mainSurface)    
-                        if obj.rect.y > 1000:
+                        if obj.rect.y > 10000:
                             Platform.respawn(obj, surfaceSize, 175, highest_y)
                             if random.random() < 0.25 + score / 10000:
                                 print("trying to spawn a new enemy")
