@@ -198,7 +198,7 @@ class Platform():
         platform_types = ["regular", 'breaking', 'moving']
         probabilities = [0.7, 0.2, 0.1]
         vertical_gap = 175
-        y_position = 400
+        y_position = 1000
         
         for _ in range(num_platforms):
             x = random.randint(0, screen_width - platform_width)
@@ -305,7 +305,7 @@ def main():
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
     
         if gamestate == 1:
-            player = moving_entity(300,375,65,100,290,0.85,"images/player.png")
+            player = moving_entity(300,305,65,100,290,0.85,"images/player.png")
             player.velocity.y = 0
             print(player.velocity)
 
@@ -325,7 +325,8 @@ def main():
             bullets_group = pygame.sprite.Group()
 
             while gamestate == 1:
-
+                if first_platform in objects:
+                    print(first_platform.rect.y)
                 delta_time = clock.get_time() / 1000 # Time since last frame
                 #-----------------------------Event Handling-----------------------------------------#
                 ev = pygame.event.poll()    # Look for any event
@@ -338,11 +339,11 @@ def main():
                 # #if player.dead == True:
                 #     gamestate = 2
                 
-                # currentscore = heightEntity.rect.y
-                # if currentscore > score:
-                #     score =  currentscore
+                currentscore = heightEntity.rect.y
+                if currentscore > score:
+                     score =  currentscore
 
-                # score_text = scorefont.render(f'Score: {score}', True, (255, 255, 255))
+                score_text = scorefont.render(f'Score: {score}', True, (255, 255, 255))
                 if player.lastTouched and (player.rect.y > player.lastTouched.y + 600) and player.velocity.y > 2000:
                     player.rect.y += 10
                     if player.rect.y >= 600:
@@ -355,13 +356,13 @@ def main():
 
                 # #||-----Updating objects and detecting collision between the player and the environment-----||
                 # bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
-                # for bullet in bullets_group:
-                #     bullet.update(objects)
+                for bullet in bullets_group:
+                    bullet.update(objects)
                 checkPlayerInput(player, delta_time, 200, objects, bullets_group)
                 updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
                 updateObjects(player, delta_time, objects)           # Update X-axis movement
                 handle_collisions(player, objects)
-                # mainSurface.blit(score_text, (10, 10))  
+                mainSurface.blit(score_text, (10, 10))  
 
                 highest_y = min(obj.rect.y for obj in objects if isinstance(obj, Platform))
                 for obj in objects:
@@ -527,13 +528,14 @@ def update_animation(self, delta_time):
 def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
     keys = pygame.key.get_pressed()
     mouse_buttons = pygame.mouse.get_pressed()
-    
     # Jump logic
     if (keys[pygame.K_UP] or keys[pygame.K_w]) and player.grounded:
         player.velocity.y = -700  # Adjust jump strength
         player.grounded = False  # Set player as airborne
-    if not player.grounded:
-     player.velocity.y += 1200 * delta_time
+    if not player.grounded and player.velocity.y < 1000:
+        player.velocity.y += 1200 * delta_time
+    else:
+        player.velocity.y = 1000
         
     # Horizontal movement logic
     if keys[pygame.K_LEFT] or keys[pygame.K_a]:
