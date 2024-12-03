@@ -253,8 +253,8 @@ def main():
             if ev.type == pygame.QUIT:
                  return
             if ev.type == pygame.KEYDOWN:
-                if ev.key == pygame.KEYDOWN:
-                    gamestate = 1
+                gamestate = 1
+                    
             if ev.type == pygame.MOUSEBUTTONDOWN:
                 if start_button_rect.collidepoint(ev.pos):
                     gamestate = 1
