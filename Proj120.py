@@ -190,13 +190,25 @@ class Bullet(pygame.sprite.Sprite):
         if not self.rect.colliderect(pygame.Rect(0, 0, pygame.display.get_surface().get_width(), pygame.display.get_surface().get_height())):
             self.kill()  # Remove the bullet from the sprite group
     
-# def draw_main_menu(screen, font):
-#     screen.fill((0, 0, 0))
-#     title_text = font.render('Chill Jump', True, (255, 255, 255))
-#     start_text = font.render('Press any key to Start', True, (255, 255, 255))
-#     screen.blit(title_text, (200, 100))
-#     screen.blit(start_text, (170, 200))
-#     pygame.display.update()
+def draw_main_menu(screen, image, font1, font2):
+    screen.blit(image, (0,0))
+    title_text1 = font1.render('Welcome to', True, (0,0,0))
+    screen.blit(title_text1, (125, 150))
+    title_text2 = font1.render('Chill Jump!', True, (0,0,0))
+    screen.blit(title_text2, (145, 210))
+
+    start_button = font1.render("Start", True, (255, 255, 255))
+    start_button_rect = start_button.get_rect(center=(580 // 2, 580 // 2 + 100))
+    screen.blit(start_button, start_button_rect)
+
+    instructions = font2.render('press start or any key to play', True, (200,200,200))
+    screen.blit(instructions, (50, 440))
+
+    pygame.display.flip()
+    return start_button_rect
+
+def draw_death_menu(screen, font):
+    screen.fill
 
 def main():
     #-----------------------------Setup------------------------------------------------------#
@@ -204,33 +216,40 @@ def main():
     pygame.init()      # Prepare the pygame module for use
     pygame.font.init()
     surfaceSize = 580   # Desired physical surface size, in pixels.
-    
+    bg_home = pygame.image.load('images/bghome.png')
+    bg_home = pygame.transform.scale(bg_home, (surfaceSize, surfaceSize))
+    menu_font = pygame.font.Font("fonts/Super Childish.ttf", 70)
+    instructfont = pygame.font.Font("fonts/CHICKEN Pie.ttf", 70)
     clouds = pygame.image.load('images/clouds.png')
     clouds = pygame.transform.scale(clouds, (surfaceSize, surfaceSize))
     clock = pygame.time.Clock()
     # Create surface of (width, height), and its window.
     mainSurface = pygame.display.set_mode((surfaceSize, surfaceSize))
-    font = pygame.font.Font("fonts/Comic Sans MS.ttf", 36)
+    scorefont = pygame.font.Font("fonts/Comic Sans MS.ttf", 36)
     score = 0
 
     #-----------------------------Program Variable Initialization----------------------------#
-    gamestate = 1
+    gamestate = 0
     
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
         
-        # if gamestate == 0:  # Main menu
-        #     draw_main_menu(mainSurface, font)
-        #     ev = pygame.event.poll()
-        #     if ev.type == pygame.QUIT:
-        #         return
-        #     if ev.type == pygame.KEYDOWN:  # Start the game when a key is pressed
-        #         gamestate = 1
+        if gamestate == 0:
+            start_button_rect = draw_main_menu(mainSurface, bg_home, menu_font, instructfont)
+            ev = pygame.event.poll()
+            if ev.type == pygame.QUIT:
+                 return
+            if ev.type == pygame.KEYDOWN:
+                if ev.key == pygame.KEYDOWN: ## TBF
+                    gamestate = 1
+            if ev.type == pygame.MOUSEBUTTONDOWN:
+                if start_button_rect.collidepoint(ev.pos):
+                    gamestate = 1
 
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
     
-        if gamestate == 1:
+        elif gamestate == 1:
             player = moving_entity(300,375,65,100,290,0.85,"images/player.png")
             heightEntity = enemy(0,0,0,0,0,0,"images/player.png")
             player.velocity.y = 497
@@ -265,7 +284,7 @@ def main():
                 if currentscore > score:
                     score =  currentscore
 
-                score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+                score_text = scorefont.render(f'Score: {score}', True, (255, 255, 255))
                 if player.lastTouched and (player.rect.y > player.lastTouched.y + 600):
                     player.rect.y += 10
                     if player.rect.y >= 600:
