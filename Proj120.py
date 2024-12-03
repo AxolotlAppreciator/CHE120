@@ -107,12 +107,13 @@ class Platform():
         return (255, 255, 255)  # Default to white if unknown
         
     def get_platform_sprite(self):
+        self.sprite = None
         if self.type == "regular":
-            return "images/grassplatform.png"  # Green for regular
+            self.sprite = "images/grassplatform.png"  # Green for regular
         elif self.type == "breaking":
-            return "images/breaking.png"  # Red for breakable
+            self.sprite = "images/breaking.png"  # Red for breakable
         elif self.type == "moving":
-            return "images/clouds.png"  # Blue for moving
+            self.sprite = "images/clouds.png"  # Blue for moving
         
     # horizontal moving platform
     def moving(self, screen_width):
@@ -141,7 +142,7 @@ class Platform():
 
     def render(self, screen):
         colour = self.get_platform_image() if self.active else (128, 128, 128) # grey = inactive
-        plat_sprite = self.get_platform_sprite() if self.active else None
+        plat_sprite = self.sprite
 
         if self.sprite:
             screen.blit(plat_sprite, (self.rect.x, self.rect.y))
@@ -242,22 +243,22 @@ def main():
     score = 0
 
     #-----------------------------Program Variable Initialization----------------------------#
-    gamestate = 0
+    gamestate = 1
     
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
         
-        if gamestate == 0:
-            start_button_rect = draw_main_menu(mainSurface, bg_home, menu_font, instructfont)
-            ev = pygame.event.poll()
-            if ev.type == pygame.QUIT:
-                 return
-            if ev.type == pygame.KEYDOWN:
-                if ev.key == pygame.KEYDOWN:
-                    gamestate = 1
-            if ev.type == pygame.MOUSEBUTTONDOWN:
-                if start_button_rect.collidepoint(ev.pos):
-                    gamestate = 1
+        # if gamestate == 0:
+        #     start_button_rect = draw_main_menu(mainSurface, bg_home, menu_font, instructfont)
+        #     ev = pygame.event.poll()
+        #     if ev.type == pygame.QUIT:
+        #          return
+        #     if ev.type == pygame.KEYDOWN:
+        #         if ev.key == pygame.KEYDOWN:
+        #             gamestate = 1
+        #     if ev.type == pygame.MOUSEBUTTONDOWN:
+        #         if start_button_rect.collidepoint(ev.pos):
+        #             gamestate = 1
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
     
