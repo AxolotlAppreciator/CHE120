@@ -115,12 +115,16 @@ class Platform():
         else:     
             pygame.draw.rect(screen, colour, self.rect)
     
-    ##def respawn(self, screen_width, screen_height):
-        ##if self.rect.top > screen_height:
-          ##  self.rect.x = random.randint(0, screen_width - self.rect.width)
-         ##   self.rect.y = random.randint(-100, -20)
-          ##  self.active = True
-          ##  self.timer = None
+    def respawn(self, screen_width, vertical_gap, highest_y):
+        self.rect.x = random.randint(0, screen_width - self.rect.width)
+        self.rect.y = highest_y - vertical_gap
+        platform_types = ["regular", "breaking", "moving"]
+        probabilities = [0.7, 0.2, 0.1]
+        self.type = random.choices(platform_types, probabilities)[0]
+        self.speed = 0 if self.type != "moving" else random.randint(1, 3)
+        self.active = True
+        self.timer = None
+        vertical_gap = 175
 
    # def scroll(self, speed):
        # self.rect.y += speed # move platform vertically
@@ -237,7 +241,18 @@ def main():
             handle_collisions(player, objects)
             score = score + 1
             score_text = font.render(f'Score: {score}', True, (255, 255, 255))
-            mainSurface.blit(score_text, (10, 10))      
+            mainSurface.blit(score_text, (10, 10))  
+
+            highest_y = min(obj.rect.y for obj in objects if isinstance(obj, Platform))
+            for obj in objects:
+                if isinstance(obj, Platform):
+                    if obj.rect.y > 1000:
+                        Platform.respawn(obj, surfaceSize, vertical_gap, highest_y)
+
+            for obj in objects:
+                if isinstance(obj, Platform): 
+                    obj.moving(surfaceSize) 
+                    obj.render(mainSurface)    
 
            # for platform in objects:
               #  if isinstance(platform, Platform):  
