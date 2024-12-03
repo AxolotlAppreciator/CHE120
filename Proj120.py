@@ -263,7 +263,7 @@ def main():
                     if isinstance(obj, Platform):
                         obj.moving(surfaceSize) 
                         obj.render(mainSurface)    
-                        if obj.rect.y > 1400:
+                        if obj.rect.y > 1000:
                             Platform.respawn(obj, surfaceSize, 175, highest_y)
                             if random.random() < 0.25 + score / 10000:
                                 print("trying to spawn a new enemy")
