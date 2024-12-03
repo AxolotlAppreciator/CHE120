@@ -30,7 +30,7 @@ class moving_entity():
         # If there's a sprite path, load the sprite
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
-            self.sprite = pygame.transform.scale(self.sprite, (width+30, height))
+            self.sprite = pygame.transform.scale(self.sprite, (width+40, height))
 
         # Create a flipped version of the sprite for facing left
         self.sprite_left = pygame.transform.flip(self.sprite, True, False)  # Flip horizontally
@@ -55,7 +55,7 @@ class enemy():
         self.theta = 0
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
-            self.sprite = pygame.transform.scale(self.sprite,(width+30,height))
+            self.sprite = pygame.transform.scale(self.sprite,(width+40,height))
 
     def movementBehaviour(self,originalX,maxDist,delta_time,player):
         if self.type == "moving":
@@ -195,7 +195,8 @@ def main():
     pygame.init()      # Prepare the pygame module for use
     surfaceSize = 580   # Desired physical surface size, in pixels.
 
-
+    clouds = pygame.image.load('images/clouds.png')
+    clouds = pygame.transform.scale(clouds, (surfaceSize, surfaceSize))
     clock = pygame.time.Clock()
     # Create surface of (width, height), and its window.
     mainSurface = pygame.display.set_mode((surfaceSize, surfaceSize))
@@ -206,7 +207,7 @@ def main():
 
 
     font = pygame.font.Font(None, 36)
-
+    score = 0
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
         
@@ -214,19 +215,21 @@ def main():
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
     
         if gamestate == 1:
-            player = moving_entity(300,375,75,100,290,0.85,"images/player.png")
+            player = moving_entity(300,375,65,100,290,0.85,"images/player.png")
+            heightEntity = enemy(0,0,0,0,0,0,"images/player.png")
             player.velocity.y = 497
 
             #List of all active objects on the screen
             objects = []
             Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-            first_platform = Platform(300, 600, 100, 20, "regular")
+            first_platform = Platform(300, 600, 100, 20)  # "regular", spritePath = None, speed = 0, first=True
             objects.append(first_platform)
-            
+
+            #placeholder enemy
+            #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
 
             #List of active entities that get updated each frame
-            activeEntities = []
-            score = 0
+            activeEntities = [heightEntity]
             bullets_group = pygame.sprite.Group()
 
             while gamestate == 1:
@@ -241,12 +244,19 @@ def main():
                 #check for dead player
                 if player.dead == True:
                     gamestate = 2
-                #temp score
-                score = score + 1
-                score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+                
+                currentscore = (heightEntity.rect.y)%100
+                if currentscore > score:
+                    score =  currentscore
 
+                score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+                if player.lastTouched and (player.rect.y > player.lastTouched.y + 600):
+                    player.rect.y += 10
+                    if player.rect.y >= 600:
+                        gamestate = 2
                 #clears main surface
                 mainSurface.fill((53, 80, 112))
+                mainSurface.blit(clouds, (0, 0))
 
 
 
@@ -295,7 +305,8 @@ def main():
                 clock.tick(60)
             
         if gamestate == 2:
-            mainSurface.fill((255, 80, 10))
+            score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+            mainSurface.fill((255, 20, 10))
             pygame.display.flip()
             print("dead")
             ev = pygame.event.poll()    # Look for any event
@@ -327,7 +338,7 @@ def checkBullet(self,bullet,player,enemylist):
 def respawn(screen_width, vertical_gap, highest_y,activeEntities):
         #enemy2 = enemy(200,300,50,75,100,spritePath = "images/enemy.png",enemy_type="spinning")
         movement_types = ["moving", "spinning","following"]
-        probabilities = [0.4, 0.3,0.3]
+        probabilities = [0.5, 0.45,0.05]
         typez = random.choices(movement_types, probabilities)[0]
         xpos = random.randint(0, screen_width)
         ypos = highest_y - vertical_gap
