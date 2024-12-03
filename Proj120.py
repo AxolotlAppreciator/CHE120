@@ -325,7 +325,6 @@ def main():
         if gamestate == 1:
             player = moving_entity(300,305,65,100,290,0.85,"images/player.png")
             player.velocity.y = 0
-            print(player.velocity)
 
             heightEntity = enemy(0,0,0,0,0,0,"images/player.png")
             #List of all active objects on the screen
@@ -343,8 +342,6 @@ def main():
             bullets_group = pygame.sprite.Group()
 
             while gamestate == 1:
-                if first_platform in objects:
-                    print(first_platform.rect.y)
                 delta_time = clock.get_time() / 1000 # Time since last frame
                 #-----------------------------Event Handling-----------------------------------------#
                 ev = pygame.event.poll()    # Look for any event
@@ -544,16 +541,16 @@ def update_animation(self, delta_time):
                 self.animation_timer = 0
 
 def checkPlayerInput(player, delta_time, player_speed, objects, bullets_group):
+    print(player.velocity.y)
     keys = pygame.key.get_pressed()
     mouse_buttons = pygame.mouse.get_pressed()
     # Jump logic
     if (keys[pygame.K_UP] or keys[pygame.K_w]) and player.grounded:
-        player.velocity.y = -700  # Adjust jump strength
+        player.velocity.y = -500  # Adjust jump strength
         player.grounded = False  # Set player as airborne
-    if not player.grounded and player.velocity.y < 1000:
-        player.velocity.y += 1200 * delta_time
-    else:
-        player.velocity.y = 1000
+    if (not player.grounded) and player.velocity.y < 1000:
+        player.velocity.y += 900 * delta_time
+
         
     # Horizontal movement logic
     if keys[pygame.K_LEFT] or keys[pygame.K_a]:
