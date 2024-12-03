@@ -245,7 +245,7 @@ def main():
                 if player.dead == True:
                     gamestate = 2
                 
-                currentscore = (heightEntity.rect.y)%100
+                currentscore = heightEntity.rect.y
                 if currentscore > score:
                     score =  currentscore
 
