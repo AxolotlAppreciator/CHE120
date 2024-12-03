@@ -70,9 +70,8 @@ class enemy():
         elif self.type == "following":
             dir = math.hypot(player.rect.x, player.rect.y)
             directionVector = pygame.Vector2(player.rect.x - self.rect.x, player.rect.y - self.rect.y).normalize()
-            self.velocity += directionVector * 30
-            self.rect.x += self.velocity.x * delta_time * 2
-            self.rect.y += self.velocity.y * delta_time
+            self.rect.x += directionVector.x * delta_time * 100
+            self.rect.y += directionVector.y * delta_time * 100
 
     def render(self, screen):
         if self.sprite:
