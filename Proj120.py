@@ -11,7 +11,8 @@ from pygame import mixer
 # mixer.music.play() 
 pygame.display.set_caption("Chill Jump")
 ## font = pygame.font.SysFont("Comic Sans MS",25) ## change to comic sans and pick sizing and whatnot
-
+grass = pygame.image.load('images/grassplatform.png')
+breaking = pygame.image.load('images/breaking.png')
 #Instantiate a new player entity
 class moving_entity():     
     def __init__(self,x, y, width, height, max_speed, deceleration_rate, spritePath=None):
@@ -97,7 +98,10 @@ class Platform():
         if spritePath:
             self.sprite = spritePath  
         else:
-            self.sprite = pygame.Surface((width, height)) 
+            if platform_type == 'breaking':
+                self.sprite = breaking
+            else:
+                self.sprite = pygame.Surface((width, height)) 
         # if spritePath ==  'grass':
         #     self.sprite = pygame.image.load('images/grassplatform.png')
         #     #self.sprite = pygame.transform.scale(self.sprite, (width, height))
@@ -224,7 +228,7 @@ def main():
     clouds = pygame.image.load('images/clouds.png')
     clouds = pygame.transform.scale(clouds, (surfaceSize, surfaceSize))
     clock = pygame.time.Clock()
-    grass = pygame.image.load('images/grassplatform.png')
+
     # Create surface of (width, height), and its window.
     mainSurface = pygame.display.set_mode((surfaceSize, surfaceSize))
     scorefont = pygame.font.Font("fonts/Comic Sans MS.ttf", 36)
