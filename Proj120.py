@@ -1,14 +1,14 @@
 ## CHE 120 Final Project - Chill Jump
 ## By Gabriella Kim, Ivy Nguyen, Yana Petcheva, Sebastien Tremblay
 
-# import modules
+# Import modules
 import pygame
 import random
 import time
 import math
 from pygame import mixer 
 
-# add background music
+# Add background music
 # mixer.init() 
 # mixer.music.load("audio/song.mp3") 
 # mixer.music.set_volume(0.7) 
@@ -30,7 +30,7 @@ class moving_entity():
         self.sprite = None # the entity sprite
         self.grounded = False # whether the entity is grounded
         self.accelerating = False # whether the entity is accelerating
-        self.direction = 0 # the direction that the entity faces where left = -1 and right = 1
+        self.direction = 0 # the direction of movement that the entity faces where left = -1 and right = 1
         self.max_speed = max_speed # the entity's max speed
         self.mouse_held = False # whether the mouse click is held
         self.dead = False # the death status of the entity
@@ -61,21 +61,35 @@ class enemy():
     
     '''
     def __init__(self,x,y,width,height,maxDist, enemy_type = "moving", spritePath = None):
-        self.rect = pygame.Rect(x,y,width,height)
-        self.sprite = None
-        self.type = enemy_type
-        self.accelerating = True
-        self.max_speed = 500
-        self.direction = 0
-        self.velocity = pygame.Vector2(0,0)
-        self.maxDist = maxDist
-        self.originalX = x
-        self.theta = 0
+        self.rect = pygame.Rect(x,y,width,height) # the enemy's rectangle
+        self.sprite = None # the enemy sprite
+        self.type = enemy_type # the enemy type
+        self.accelerating = True # the enemy acceleration, which sets it to always be true
+        self.max_speed = 500 # the enemy's maximunm direction
+        self.direction = 0 # the direction of movement that the enemy faces where left = -1 and right = 1
+        self.velocity = pygame.Vector2(0,0) # the current velocity
+        self.maxDist = maxDist # the maximum movement distance
+        self.originalX = x # the starting x position
+        self.theta = 0 # the angle for the enemy spinning direction
+
+        # 
+        if enemy_type == "moving":
+            spritePath = "images/enemy.png"
+        elif enemy_type == "spinning":
+            spritePath = "images/enemySpinning.png"
+        elif enemy_type == "following":
+            spritePath = "images/enemyChasing.png"
+
+        # If there's a sprite path, load the sprite
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite,(width+40,height))
 
     def movementBehaviour(self,originalX,maxDist,delta_time,player):
+        '''
+        
+        
+        '''
         if self.type == "moving":
             if self.rect.x > originalX + maxDist:
                 self.direction = -1
