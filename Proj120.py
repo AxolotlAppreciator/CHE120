@@ -249,10 +249,10 @@ def draw_main_menu(screen, image, font1, font2):
 
 def end_screen(screen, image, font1, font2, score):
     screen.blit(image, (0,0))
-    end_text = font1.render((f'You died! Your score was {score}'), True, (0,0,0))
-    screen.blit(end_text (100, 100))
-    again_esc_text = font2.render('Press space to play again, or escape to close')
-    screen.blit(again_esc_text (70, 300))
+    end_text = font1.render((f'You died! Your score was {score}'), True, (255,255,255))
+    screen.blit(end_text, (100, 100))
+    again_esc_text = font2.render('Press space to play again, or escape to close', True, (255,255,255))
+    screen.blit(again_esc_text, (170, 300))
 def main():
     #-----------------------------Setup------------------------------------------------------#
     """ Set up the game and run the main game loop """
@@ -263,6 +263,8 @@ def main():
     bg_home = pygame.transform.scale(bg_home, (surfaceSize, surfaceSize))
     menu_font = pygame.font.Font("fonts/Super Childish.ttf", 70)
     instructfont = pygame.font.Font("fonts/CHICKEN Pie.ttf", 30)
+    die_font = pygame.font.Font("fonts/Super Childish.ttf", 30)
+    again_font = pygame.font.Font("fonts/CHICKEN Pie.ttf", 15)
     clouds = pygame.image.load('images/clouds.png')
     clouds = pygame.transform.scale(clouds, (surfaceSize, surfaceSize))
     clock = pygame.time.Clock()
@@ -297,9 +299,9 @@ def main():
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
     
         if gamestate == 1:
-            player = moving_entity(300,375,65,100,290,0.85,"images/player.png")
+            #player = moving_entity(300,375,65,100,290,0.85,"images/player.png")
             heightEntity = enemy(0,0,0,0,0,0,"images/player.png")
-            player.velocity.y = 497
+           # player.velocity.y = 497
 
             #List of all active objects on the screen
             objects = []
@@ -323,34 +325,34 @@ def main():
                 if ev.type == pygame.KEYDOWN:
                     if ev.key == pygame.K_ESCAPE:
                         gamestate = 4
-                #check for dead player
-                if player.dead == True:
-                    gamestate = 2
+                # #check for dead player
+                # #if player.dead == True:
+                #     gamestate = 2
                 
-                currentscore = heightEntity.rect.y
-                if currentscore > score:
-                    score =  currentscore
+                # currentscore = heightEntity.rect.y
+                # if currentscore > score:
+                #     score =  currentscore
 
-                score_text = scorefont.render(f'Score: {score}', True, (255, 255, 255))
-                if player.lastTouched and (player.rect.y > player.lastTouched.y + 600):
-                    player.rect.y += 10
-                    if player.rect.y >= 600:
-                        gamestate = 2
+                # score_text = scorefont.render(f'Score: {score}', True, (255, 255, 255))
+                # if player.lastTouched and (player.rect.y > player.lastTouched.y + 600):
+                #     player.rect.y += 10
+                #     if player.rect.y >= 600:
+                #         gamestate = 2
                 #clears main surface
                 mainSurface.fill((53, 80, 112))
                 mainSurface.blit(clouds, (0, 0))
 
 
 
-                #||-----Updating objects and detecting collision between the player and the environment-----||
-                bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
-                for bullet in bullets_group:
-                    bullet.update(objects)
-                checkPlayerInput(player, delta_time, 200, objects, bullets_group)
-                updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
-                updateObjects(player, delta_time, objects)           # Update X-axis movement
-                handle_collisions(player, objects)
-                mainSurface.blit(score_text, (10, 10))  
+                # #||-----Updating objects and detecting collision between the player and the environment-----||
+                # bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
+                # for bullet in bullets_group:
+                #     bullet.update(objects)
+                # checkPlayerInput(player, delta_time, 200, objects, bullets_group)
+                # updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
+                # updateObjects(player, delta_time, objects)           # Update X-axis movement
+                # handle_collisions(player, objects)
+                # mainSurface.blit(score_text, (10, 10))  
 
                 highest_y = min(obj.rect.y for obj in objects if isinstance(obj, Platform))
                 for obj in objects:
@@ -371,29 +373,30 @@ def main():
                         obj.timer -= delta_time
                         if obj.timer <= 0:
                             Platform.respawn(obj, surfaceSize, 175, highest_y)
-                player.render(mainSurface)
+                #player.render(mainSurface)
 
                 #||-----Drawing Everything-----||
                 #(also includes some entity behaviour for brievity)
-                bullets_group.draw(mainSurface)  # Draw all bullets
-                for entity in activeEntities:
-                    entity.render(mainSurface)
-                    updateObjects(entity, delta_time, objects)
-                    entity.movementBehaviour(entity.originalX, entity.maxDist, delta_time,player)
-                for en in activeEntities:
-                    checkBullet(en,bullets_group,player,activeEntities)
+                # bullets_group.draw(mainSurface)  # Draw all bullets
+                # for entity in activeEntities:
+                #     entity.render(mainSurface)
+                #     updateObjects(entity, delta_time, objects)
+                #     entity.movementBehaviour(entity.originalX, entity.maxDist, delta_time,player)
+                # for en in activeEntities:
+                #     checkBullet(en,bullets_group,player,activeEntities)
 
                 pygame.display.flip()
                 clock.tick(60)
             
         if gamestate == 2:
             mainSurface.fill((255, 20, 10))
-            replay_button = draw_main_menu(mainSurface, bg_home, menu_font, instructfont, score)
+            end_screen(mainSurface, bg_home, die_font, again_font, score)
             #score_text = scorefont.render(f'Score: {score}', True, (255, 255, 255))
-            if ev.type == pygame.MOUSEBUTTONDOWN:
-                if replay_button.collidepoint(ev.pos):
-                    gamestate = 1
             ev = pygame.event.poll()    # Look for any event
+            # if ev.type == pygame.MOUSEBUTTONDOWN:
+            #     if replay_button.collidepoint(ev.pos):
+            #         gamestate = 1
+
             if ev.type == pygame.QUIT:  # Window close button clicked?
                 break
             if ev.type == pygame.KEYDOWN:
