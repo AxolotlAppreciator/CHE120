@@ -197,30 +197,10 @@ def main():
     
 #     add if it falls behind it get fucked!! and lose
     #-----------------------------Program Variable Initialization----------------------------#
+    gamestate = 1
 
 
     font = pygame.font.Font(None, 36)
-    player = moving_entity(300,375,75,100,290,0.85,"images/player.png")
-    player.velocity.y = 497
-
-    #List of all active objects on the screen
-    objects = []
-    active_entities = []
-    Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-    first_platform = Platform(300, 600, 100, 20)  # "regular", spritePath = None, speed = 0, first=True
-    objects.append(first_platform)
-
-    #placeholder enemy
-    #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
-    enemy1 = enemy(200,300,50,75,100,spritePath = "images/enemy.png")
-    enemy2 = enemy(200,300,50,75,100,spritePath = "images/enemy.png",enemy_type="spinning")
-
-    #List of active entities that get updated each frame
-    activeEntities = [enemy1,enemy2]
-    gamestate = 1
-    score = 0
-    bullets_group = pygame.sprite.Group()
-
 
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
@@ -229,74 +209,102 @@ def main():
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
     
         if gamestate == 1:
-            delta_time = clock.get_time() / 1000 # Time since last frame
-            #-----------------------------Event Handling-----------------------------------------#
+            player = moving_entity(300,375,75,100,290,0.85,"images/player.png")
+            player.velocity.y = 497
+
+            #List of all active objects on the screen
+            objects = []
+            active_entities = []
+            Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
+            first_platform = Platform(300, 600, 100, 20)  # "regular", spritePath = None, speed = 0, first=True
+            objects.append(first_platform)
+
+            #placeholder enemy
+            #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
+
+            #List of active entities that get updated each frame
+            activeEntities = []
+            score = 0
+            bullets_group = pygame.sprite.Group()
+
+            while gamestate == 1:
+                delta_time = clock.get_time() / 1000 # Time since last frame
+                #-----------------------------Event Handling-----------------------------------------#
+                ev = pygame.event.poll()    # Look for any event
+                if ev.type == pygame.QUIT:  # Window close button clicked?
+                    gamestate = 4
+                if ev.type == pygame.KEYDOWN:
+                    if ev.key == pygame.K_ESCAPE:
+                        gamestate = 4
+                #check for dead player
+                if player.dead == True:
+                    gamestate = 2
+                #temp score
+                score = score + 1
+                score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+
+                #clears main surface
+                mainSurface.fill((53, 80, 112))
+
+
+
+                #||-----Updating objects and detecting collision between the player and the environment-----||
+                bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
+                for bullet in bullets_group:
+                    bullet.update(objects)
+                checkPlayerInput(player, delta_time, 200, objects, bullets_group)
+                updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
+                updateObjects(player, delta_time, objects)           # Update X-axis movement
+                handle_collisions(player, objects)
+                mainSurface.blit(score_text, (10, 10))  
+
+                highest_y = min(obj.rect.y for obj in objects if isinstance(obj, Platform))
+                for obj in objects:
+                    if isinstance(obj, Platform):
+                        obj.moving(surfaceSize) 
+                        obj.render(mainSurface)    
+                        if obj.rect.y > 1400:
+                            Platform.respawn(obj, surfaceSize, 175, highest_y)
+                            if random.random() < 0.25 + score / 10000:
+                                print("trying to spawn a new enemy")
+                                respawn(surfaceSize, 175, highest_y,activeEntities)
+                            if score > 5000:
+                                respawn(surfaceSize, 175, highest_y,activeEntities)
+
+                for obj in objects:
+                    obj.render(mainSurface)
+                    if obj.type == "breaking" and obj.timer != 0:
+                        obj.timer -= delta_time
+                        if obj.timer <= 0:
+                            Platform.respawn(obj, surfaceSize, 175, highest_y)
+                player.render(mainSurface)
+
+                #||-----Drawing Everything-----||
+                #(also includes some entity behaviour for brievity)
+                bullets_group.draw(mainSurface)  # Draw all bullets
+                for entity in activeEntities:
+                    entity.render(mainSurface)
+                    updateObjects(entity, delta_time, objects)
+                    entity.movementBehaviour(entity.originalX, entity.maxDist, delta_time)
+                for en in activeEntities:
+                    checkBullet(en,bullets_group,player,activeEntities)
+
+                pygame.display.flip()
+                clock.tick(60)
+            
+        if gamestate == 2:
+            mainSurface.fill((255, 80, 10))
+            pygame.display.flip()
+            print("dead")
             ev = pygame.event.poll()    # Look for any event
             if ev.type == pygame.QUIT:  # Window close button clicked?
                 break
             if ev.type == pygame.KEYDOWN:
                 if ev.key == pygame.K_ESCAPE:
                     break
-            #check for dead player
-            if player.dead == True:
-                gamestate = 2
-            #temp score
-            score = score + 1
-            score_text = font.render(f'Score: {score}', True, (255, 255, 255))
-
-            #clears main surface
-            mainSurface.fill((53, 80, 112))
-
-
-
-             #||-----Updating objects and detecting collision between the player and the environment-----||
-            bullets_group = checkPlayerInput(player, delta_time, 200, objects, bullets_group)  # Update bullets group
-            for bullet in bullets_group:
-                bullet.update(objects)
-            checkPlayerInput(player, delta_time, 200, objects, bullets_group)
-            updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
-            updateObjects(player, delta_time, objects)           # Update X-axis movement
-            handle_collisions(player, objects)
-            mainSurface.blit(score_text, (10, 10))  
-
-            highest_y = min(obj.rect.y for obj in objects if isinstance(obj, Platform))
-            for obj in objects:
-                if isinstance(obj, Platform):
-                    obj.moving(surfaceSize) 
-                    obj.render(mainSurface)    
-                    if obj.rect.y > 1400:
-                        Platform.respawn(obj, surfaceSize, 175, highest_y)
-                        if random.random() < 0.25 + score / 10000:
-                            print("trying to spawn a new enemy")
-                            respawn(surfaceSize, 175, highest_y,activeEntities)
-                        if score > 5000:
-                           respawn(surfaceSize, 175, highest_y,activeEntities)
-
-            for obj in objects:
-                obj.render(mainSurface)
-                if obj.type == "breaking" and obj.timer != 0:
-                    obj.timer -= delta_time
-                    if obj.timer <= 0:
-                        Platform.respawn(obj, surfaceSize, 175, highest_y)
-            player.render(mainSurface)
-
-            #||-----Drawing Everything-----||
-            #(also includes some entity behaviour for brievity)
-            bullets_group.draw(mainSurface)  # Draw all bullets
-            for entity in activeEntities:
-                entity.render(mainSurface)
-                updateObjects(entity, delta_time, objects)
-                entity.movementBehaviour(entity.originalX, entity.maxDist, delta_time)
-            for en in activeEntities:
-                checkBullet(en,bullets_group,player,activeEntities)
-
-            pygame.display.flip()
-            clock.tick(60)
-            
-        if gamestate == 2:
-            pygame.quit() 
-            print("dead")
             #For now it just kills it, yana do death screen. 
+        if gamestate == 4:
+            break
     pygame.quit()     # Once we leave the loop, close the window.
 
 
