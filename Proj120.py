@@ -268,6 +268,7 @@ def main():
                     break
                 if ev.type == pygame.KEYDOWN:
                     if ev.key == pygame.K_ESCAPE:
+                        gamestate = 0
                         break
                 mainSurface.fill((53, 80, 112))
                 mainSurface.blit(clouds, (0, 0)) 
