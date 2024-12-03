@@ -199,7 +199,7 @@ def main():
     #List of all active objects on the screen
     objects = []
     Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-    first_platform = Platform(300, 600, 100, 20, "regular", True) 
+    first_platform = Platform(300, 600, 100, 20, "regular", None, True) 
     objects.append(first_platform)
 
     #placeholder enemy
@@ -337,8 +337,6 @@ def updateY(self, delta_time, objects, entities):
             obj.rect.y -= vertical_offset
     for entity in entities:
         entity.rect.y -= vertical_offset
-
-
 
 def update_animation(self, delta_time):
         if self.sprite_frames:
