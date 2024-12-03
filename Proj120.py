@@ -200,7 +200,7 @@ class Platform():
         platform_types = ["regular", 'breaking', 'moving']
         probabilities = [0.7, 0.2, 0.1]
         vertical_gap = 175
-        y_position = 600
+        y_position = 400
         
         for _ in range(num_platforms):
             x = random.randint(0, screen_width - platform_width)
@@ -326,9 +326,9 @@ def main():
         if gamestate == 1:
             heightEntity = enemy(0,0,0,0,0,0,"images/player.png")
             #List of all active objects on the screen
-            first_platform = Platform(300, 400, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
+            first_platform = Platform(300, 575, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
             objects = []
-            first_platform = Platform(300, 400, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
+            first_platform = Platform(300, 575, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
             objects.append(first_platform)
             Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
             
@@ -377,7 +377,7 @@ def main():
                     if isinstance(obj, Platform):
                         obj.moving(surfaceSize) 
                         obj.render(mainSurface)    
-                        if obj.rect.y > 10000:
+                        if obj.rect.y > 1000:
                             Platform.respawn(obj, surfaceSize, 175, highest_y)
                             if random.random() < 0.25 + score / 10000:
                                 print("trying to spawn a new enemy")
