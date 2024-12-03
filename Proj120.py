@@ -277,11 +277,12 @@ def main():
             for en in activeEntities:
                 checkBullet(en,bullets_group,player,activeEntities)
             pygame.display.flip()
+            player.grounded = False
             clock.tick(60)
         if gamestate == 2:
             pygame.quit() 
             print("dead")
-            #For now it just crashes, yana do death screen. 
+            #For now it just kills it, yana do death screen. 
     pygame.quit()     # Once we leave the loop, close the window.
 
 def checkBullet(self,bullet,player,enemylist):
