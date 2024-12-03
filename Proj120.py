@@ -21,6 +21,7 @@ class moving_entity():
         self.max_speed = max_speed
         self.mouse_held = False 
         self.dead = False
+        self.lastTouched = None
         # If there's a sprite path, load the sprite
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
@@ -277,7 +278,6 @@ def main():
             for en in activeEntities:
                 checkBullet(en,bullets_group,player,activeEntities)
             pygame.display.flip()
-            player.grounded = False
             clock.tick(60)
         if gamestate == 2:
             pygame.quit() 
@@ -301,7 +301,6 @@ def handle_collisions(self, objects):
     for obj in objects:
 
         if self.rect.colliderect(obj.rect):
-            self.grounded = False
             # Check if the object is landing on top of the platform
             if self.velocity.y > 0 and self.rect.bottom >= obj.rect.top:
                 #print(obj.rect.top)
@@ -310,9 +309,13 @@ def handle_collisions(self, objects):
 
                     obj.rect.top = self.rect.bottom  # Snap to the top of the platform
                     self.grounded = True
+                    self.lastTouched = obj.rect
                     self.velocity.y = 0  # Reset vertical velocity when landing
-            else:
-                self.grounded = False
+    if self.lastTouched:
+        if self.lastTouched.left > self.rect.right:
+            self.grounded = False
+        if self.lastTouched.right < self.rect.left:
+            self.grounded = False
         
                 
 def updateObjects(self, delta_time, objects):
@@ -328,7 +331,6 @@ def updateObjects(self, delta_time, objects):
         self.rect.x = -60
         #Updates horizontal position and checks for valid collision (x)
     self.rect.x += self.velocity.x * delta_time
-    handle_collisions(self,objects)
 
 
 def updateY(self, delta_time, objects, entities):
