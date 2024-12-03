@@ -326,6 +326,7 @@ def respawn(screen_width, vertical_gap, highest_y,activeEntities):
         mDist = 100
         en = enemy(xpos,ypos,wid,hei,mDist,spritePath = "images/enemy.png",enemy_type = typez)
         activeEntities.append(en)
+        print(f"spawning enemy of type {typez}")
 
 
 def render(object, screen):#
