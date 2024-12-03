@@ -216,6 +216,7 @@ def draw_main_menu(screen, image, font1, font2):
     return start_button_rect
 
 def end_screen(screen, image, font1, font2):
+    pass
 
 def main():
     #-----------------------------Setup------------------------------------------------------#
@@ -241,7 +242,7 @@ def main():
     score = 0
 
     #-----------------------------Program Variable Initialization----------------------------#
-    gamestate = 1
+    gamestate = 0
     
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
