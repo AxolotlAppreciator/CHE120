@@ -4,12 +4,13 @@ import random
 import time
 import math
 from pygame import mixer 
+
 # mixer.init() 
 # mixer.music.load("song.mp3") 
 # mixer.music.set_volume(0.7) 
 # mixer.music.play() 
 pygame.display.set_caption("Chill Jump")
-## font = pygame.font.SysFont(None,25) ## change to comic sans and pick sizing and whatnot
+## font = pygame.font.SysFont("Comic Sans MS",25) ## change to comic sans and pick sizing and whatnot
 
 #Instantiate a new player entity
 class moving_entity():     
@@ -189,6 +190,14 @@ class Bullet(pygame.sprite.Sprite):
         if not self.rect.colliderect(pygame.Rect(0, 0, pygame.display.get_surface().get_width(), pygame.display.get_surface().get_height())):
             self.kill()  # Remove the bullet from the sprite group
     
+# def draw_main_menu(screen, font):
+#     screen.fill((0, 0, 0))
+#     title_text = font.render('Chill Jump', True, (255, 255, 255))
+#     start_text = font.render('Press any key to Start', True, (255, 255, 255))
+#     screen.blit(title_text, (200, 100))
+#     screen.blit(start_text, (170, 200))
+#     pygame.display.update()
+
 def main():
     #-----------------------------Setup------------------------------------------------------#
     """ Set up the game and run the main game loop """
@@ -200,17 +209,23 @@ def main():
     clock = pygame.time.Clock()
     # Create surface of (width, height), and its window.
     mainSurface = pygame.display.set_mode((surfaceSize, surfaceSize))
-    
-#     add if it falls behind it get fucked!! and lose
-    #-----------------------------Program Variable Initialization----------------------------#
-    gamestate = 1
-
-
     font = pygame.font.Font(None, 36)
     score = 0
+
+    #-----------------------------Program Variable Initialization----------------------------#
+    gamestate = 1
+    
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
         
+        # if gamestate == 0:  # Main menu
+        #     draw_main_menu(mainSurface, font)
+        #     ev = pygame.event.poll()
+        #     if ev.type == pygame.QUIT:
+        #         return
+        #     if ev.type == pygame.KEYDOWN:  # Start the game when a key is pressed
+        #         gamestate = 1
+
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
     
