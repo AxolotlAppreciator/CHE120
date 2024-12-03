@@ -195,7 +195,8 @@ def main():
     pygame.init()      # Prepare the pygame module for use
     surfaceSize = 580   # Desired physical surface size, in pixels.
 
-
+    clouds = pygame.image.load('images/clouds.png')
+    clouds = pygame.transform.scale(clouds, (surfaceSize, surfaceSize))
     clock = pygame.time.Clock()
     # Create surface of (width, height), and its window.
     mainSurface = pygame.display.set_mode((surfaceSize, surfaceSize))
@@ -249,6 +250,7 @@ def main():
 
                 #clears main surface
                 mainSurface.fill((53, 80, 112))
+                mainSurface.blit(clouds, (0, 0))
 
 
 
