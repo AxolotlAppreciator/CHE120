@@ -75,24 +75,20 @@ class enemy():
 
 # platform class
 class Platform():
-    def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None, speed = 0, first = False):
+    def __init__(self , x, y, width, height, platform_type = "regular", spritePath = None):
         self.rect = pygame.Rect(x ,y ,width,height)
         self.sprite = None
         self.type = platform_type
         self.speed = 0 if platform_type != "moving" else random.randint(1, 3)
         self.timer = 0 # timer for breaking platforms
         self.active = True # breaking platforms will deactivate after breaking
-        self.first = first
 
         if spritePath:
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite, (width, height))
 
     def get_platform_colour(self):
-        # this could be made into a switch case
-        if self.first:
-            return (0, 0, 0) ## black for the first
-        if self.type == "regular" and not self.first:
+        if self.type == "regular":
             return (45, 94, 52)  # Green for regular
         elif self.type == "breaking":
             return (255, 0, 0)  # Red for breakable
@@ -145,13 +141,13 @@ class Platform():
         vertical_gap = 175
 
 
-    def generate_platforms(objects, num_platforms, screen_width, screen_height):
+    def generate_platforms(objects, num_platforms, screen_width):
         platform_width = 100
         platform_height = 20
         platform_types = ["regular", 'breaking', 'moving']
         probabilities = [0.7, 0.2, 0.1]
         vertical_gap = 175
-        y_position = 400
+        y_position = 600
         
         for _ in range(num_platforms):
             x = random.randint(0, screen_width - platform_width)
@@ -163,9 +159,6 @@ class Platform():
             new_platform = Platform(x, y, platform_width, platform_height, platform_type)
             objects.append(new_platform)
             y_position -= vertical_gap
-
-    def platform_generation_collision():
-        pass
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction, speed):
@@ -207,10 +200,7 @@ def main():
 
     #List of all active objects on the screen
     objects = []
-    active_entities = []
-    Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-    first_platform = Platform(300, 600, 100, 20)  # "regular", spritePath = None, speed = 0, first=True
-    objects.append(first_platform)
+    Platform.generate_platforms(objects, 10, surfaceSize)
 
     #placeholder enemy
     #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
@@ -390,9 +380,6 @@ def updateY(self, delta_time, objects, entities):
         vertical_offset = self.velocity.y * delta_time
     else:
         vertical_offset = 0
-    for obj in objects:
-        if not obj.first:
-            obj.rect.y -= vertical_offset
     for entity in entities:
         entity.rect.y -= vertical_offset
 
