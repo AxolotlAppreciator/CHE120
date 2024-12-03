@@ -155,6 +155,7 @@ class Platform():
         self.timer = 0
         vertical_gap = 175
 
+
     def generate_platforms(objects, num_platforms, screen_width, screen_height):
         platform_width = 100
         platform_height = 20
@@ -277,7 +278,8 @@ def main():
                     obj.render(mainSurface)    
                     if obj.rect.y > 1400:
                         Platform.respawn(obj, surfaceSize, 175, highest_y) 
-                       # if random.random() < 0.25:
+                        if random.random() < 0.25:
+                            print("trying to spawn a new enemy")
                         #    new_enemy = enemy.respawn(obj, surfaceSize, 175, highest_y)
                         #    if new_enemy is not None:
                        #         active_entities.append(new_enemy)
@@ -344,7 +346,6 @@ def handle_collisions(self, objects):
                     if obj.type == "breaking":
                         print("starting breakage")
                         obj.timer = 1.5
-                        print(obj.timer)
     if self.lastTouched:
         if self.lastTouched.left > self.rect.right:
             self.grounded = False
