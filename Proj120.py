@@ -4,10 +4,10 @@ import random
 import time
 import math
 from pygame import mixer 
-mixer.init() 
-mixer.music.load("song.mp3") 
-mixer.music.set_volume(0.7) 
-mixer.music.play() 
+# mixer.init() 
+# mixer.music.load("song.mp3") 
+# mixer.music.set_volume(0.7) 
+# mixer.music.play() 
 pygame.display.set_caption("Chill Jump")
 ## font = pygame.font.SysFont(None,25) ## change to comic sans and pick sizing and whatnot
 
@@ -74,16 +74,6 @@ class enemy():
         else:
             pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
     
-    def respawn(self, screen_width, vertical_gap, highest_y):
-        self.rect.x = random.randint(0, screen_width - self.rect.width)
-        self.rect.y = highest_y - vertical_gap
-        movement_types = ["moving", "spinning"]
-        probabilities = [0.7, 0.3]
-        self.type = random.choices(movement_types, probabilities)[0]
-        self.velocity = pygame.Vector2(0, 0) if self.type != "moving" else random.randint(1, 5) * random.choice([-1, 1])
-        self.active = True
-        self.timer = 0
-        self.maxDist = random.randint(100, 300)
 
     def update(self, delta_time):
         self.movementBehaviour(self.originalX, self.maxDist, delta_time)
@@ -275,7 +265,13 @@ def main():
                     obj.moving(surfaceSize) 
                     obj.render(mainSurface)    
                     if obj.rect.y > 1400:
-                        Platform.respawn(obj, surfaceSize, 175, highest_y) 
+                        Platform.respawn(obj, surfaceSize, 175, highest_y)
+                        if random.random() < 0.25 + score / 10000:
+                            print("trying to spawn a new enemy")
+                            respawn(surfaceSize, 175, highest_y,activeEntities)
+                        if score > 5000:
+                           respawn(surfaceSize, 175, highest_y,activeEntities)
+
             for obj in objects:
                 obj.render(mainSurface)
                 if obj.type == "breaking" and obj.timer != 0:
@@ -318,7 +314,18 @@ def checkBullet(self,bullet,player,enemylist):
         if self.rect.colliderect(bul.rect):
             enemylist.remove(self)
 
-
+def respawn(screen_width, vertical_gap, highest_y,activeEntities):
+        #enemy2 = enemy(200,300,50,75,100,spritePath = "images/enemy.png",enemy_type="spinning")
+        movement_types = ["moving", "spinning"]
+        probabilities = [0.7, 0.3]
+        typez = random.choices(movement_types, probabilities)[0]
+        xpos = random.randint(0, screen_width)
+        ypos = highest_y - vertical_gap
+        wid = 50
+        hei = 70
+        mDist = 100
+        en = enemy(xpos,ypos,wid,hei,mDist,spritePath = "images/enemy.png",enemy_type = typez)
+        activeEntities.append(en)
 
 
 def render(object, screen):#
