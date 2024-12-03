@@ -277,10 +277,10 @@ def main():
                     obj.render(mainSurface)    
                     if obj.rect.y > 1400:
                         Platform.respawn(obj, surfaceSize, 175, highest_y) 
-                        if random.random() < 0.25:
-                            new_enemy = enemy.respawn(obj, surfaceSize, 175, highest_y)
-                            if new_enemy is not None:
-                                active_entities.append(new_enemy)
+                       # if random.random() < 0.25:
+                        #    new_enemy = enemy.respawn(obj, surfaceSize, 175, highest_y)
+                        #    if new_enemy is not None:
+                       #         active_entities.append(new_enemy)
             for obj in objects:
                 obj.render(mainSurface)
                 if obj.type == "breaking" and obj.timer != 0:
