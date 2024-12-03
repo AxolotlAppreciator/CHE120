@@ -242,7 +242,7 @@ def main():
     score = 0
 
     #-----------------------------Program Variable Initialization----------------------------#
-    gamestate = 1
+    gamestate = 0
     
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
