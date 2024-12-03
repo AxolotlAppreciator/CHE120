@@ -242,7 +242,8 @@ def main():
             #    else:
             #        player.rect.y = 300
             bullets_group.draw(mainSurface)  # Draw all bullets
-
+            if player.dead == True:
+                gamestate = 2
             updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
             updateObjects(player, delta_time, objects)           # Update X-axis movement
             handle_collisions(player, objects)
@@ -287,7 +288,9 @@ def main():
                 checkBullet(en,bullets_group,player,activeEntities)
             pygame.display.flip()
             clock.tick(60)
-
+        if gamestate == 2:
+            print("dead")
+            #For now it just crashes, yana do death screen. 
     pygame.quit()     # Once we leave the loop, close the window.
 
 def checkBullet(self,bullet,player,enemylist):
