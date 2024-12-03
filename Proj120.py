@@ -193,22 +193,20 @@ class Bullet(pygame.sprite.Sprite):
 def draw_main_menu(screen, image, font1, font2):
     screen.blit(image, (0,0))
     title_text1 = font1.render('Welcome to', True, (0,0,0))
-    screen.blit(title_text1, (125, 150))
+    screen.blit(title_text1, (130, 150))
     title_text2 = font1.render('Chill Jump!', True, (0,0,0))
-    screen.blit(title_text2, (145, 210))
+    screen.blit(title_text2, (150, 210))
 
     start_button = font1.render("Start", True, (255, 255, 255))
-    start_button_rect = start_button.get_rect(center=(580 // 2, 580 // 2 + 100))
+    start_button_rect = start_button.get_rect(center=(580 // 2, 580 // 2 + 75))
     screen.blit(start_button, start_button_rect)
 
-    instructions = font2.render('press start or any key to play', True, (210,210,210))
-    screen.blit(instructions, (70, 440))
-
+    instructions1 = font2.render('press start or', True, (220, 220, 220))
+    screen.blit(instructions1, (175, 435))
+    instructions1 = font2.render('any key to play', True, (220, 220, 220))
+    screen.blit(instructions1, (175, 470))
     pygame.display.flip()
     return start_button_rect
-
-def draw_death_menu(screen, font):
-    screen.fill
 
 def main():
     #-----------------------------Setup------------------------------------------------------#
@@ -240,7 +238,7 @@ def main():
             if ev.type == pygame.QUIT:
                  return
             if ev.type == pygame.KEYDOWN:
-                if ev.key == pygame.KEYDOWN: ## TBF
+                if ev.key == pygame.KEYDOWN:
                     gamestate = 1
             if ev.type == pygame.MOUSEBUTTONDOWN:
                 if start_button_rect.collidepoint(ev.pos):
