@@ -3,12 +3,12 @@ import pygame
 import random
 import time
 import math
-# from pygame import mixer 
-# mixer.init() 
-# mixer.music.load("song.mp3") 
-# mixer.music.set_volume(0.7) 
-# mixer.music.play() 
-# pygame.display.set_caption("Chill Jump")
+from pygame import mixer 
+mixer.init() 
+mixer.music.load("song.mp3") 
+mixer.music.set_volume(0.7) 
+mixer.music.play() 
+pygame.display.set_caption("Chill Jump")
 ## font = pygame.font.SysFont(None,25) ## change to comic sans and pick sizing and whatnot
 
 #Instantiate a new player entity
@@ -57,7 +57,7 @@ class enemy():
             self.sprite = pygame.image.load(spritePath).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite,(width+30,height))
 
-    def movementBehaviour(self,originalX,maxDist,delta_time):
+    def movementBehaviour(self,originalX,maxDist,delta_time,player):
         if self.type == "moving":
             if self.rect.x > originalX + maxDist:
                 self.direction = -1
@@ -67,6 +67,9 @@ class enemy():
             self.theta += math.pi*delta_time
             self.rect.x += math.cos(self.theta)*3
             self.rect.y += math.sin(self.theta)*3
+        elif self.type == "following":
+            directionVector = player.rect.normalize()
+            self.rect += directionVector
 
     def render(self, screen):
         if self.sprite:
@@ -74,16 +77,6 @@ class enemy():
         else:
             pygame.draw.rect(screen, (0, 255, 0), self.rect)  # Default to a green rectangle
     
-    def respawn(self, screen_width, vertical_gap, highest_y):
-        self.rect.x = random.randint(0, screen_width - self.rect.width)
-        self.rect.y = highest_y - vertical_gap
-        movement_types = ["moving", "spinning"]
-        probabilities = [0.7, 0.3]
-        self.type = random.choices(movement_types, probabilities)[0]
-        self.velocity = pygame.Vector2(0, 0) if self.type != "moving" else random.randint(1, 5) * random.choice([-1, 1])
-        self.active = True
-        self.timer = 0
-        self.maxDist = random.randint(100, 300)
 
     def update(self, delta_time):
         self.movementBehaviour(self.originalX, self.maxDist, delta_time)
@@ -225,29 +218,35 @@ def main():
     
 #     add if it falls behind it get fucked!! and lose
     #-----------------------------Program Variable Initialization----------------------------#
+    gamestate = 1
 
 
     font = pygame.font.Font(None, 36)
-    player = moving_entity(300,375,75,100,290,0.85,"images/player.png")
-    player.velocity.y = 497
 
-    #List of all active objects on the screen
-    objects = []
-    active_entities = []
-    Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
-    first_platform = Platform(300, 600, 100, 20)  # "regular", spritePath = None, speed = 0, first=True
-    objects.append(first_platform)
+    #-----------------------------Main Program Loop---------------------------------------------#
+    while True:
+        
+        #-----------------------------Program Logic---------------------------------------------#
+        # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
+    
+        if gamestate == 1:
+            player = moving_entity(300,375,75,100,290,0.85,"images/player.png")
+            player.velocity.y = 497
 
-    #placeholder enemy
-    #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
-    enemy1 = enemy(200,300,50,75,100,spritePath = "images/enemy.png")
-    enemy2 = enemy(200,300,50,75,100,spritePath = "images/enemy.png",enemy_type="spinning")
+            #List of all active objects on the screen
+            objects = []
+            active_entities = []
+            Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
+            first_platform = Platform(300, 600, 100, 20)  # "regular", spritePath = None, speed = 0, first=True
+            objects.append(first_platform)
 
-    #List of active entities that get updated each frame
-    activeEntities = [enemy1,enemy2]
-    gamestate = 1
-    score = 0
-    bullets_group = pygame.sprite.Group()
+            #placeholder enemy
+            #def __init__(self,x,y,width,height,health, enemy_type = "moving", spritePath = None):
+
+            #List of active entities that get updated each frame
+            activeEntities = []
+            score = 0
+            bullets_group = pygame.sprite.Group()
 
 
     #-----------------------------Main Program Loop---------------------------------------------#
@@ -279,37 +278,31 @@ def main():
             bullets_group.draw(mainSurface)  # Draw all bullets
             if player.dead == True:
                 gamestate = 2
-            first_platform = update_first_platform(objects, player)
-
-    # Calculate the score
-            if first_platform:
-                score = max(0, surfaceSize - first_platform.rect.y-1755)
-            score_text = font.render(f'Score: {score}', True, (255, 255, 255))
-            mainSurface.blit(score_text, (10, 10))  
-
             updateY(player, delta_time, objects, activeEntities)  # Update Y-axis movement
             updateObjects(player, delta_time, objects)           # Update X-axis movement
             handle_collisions(player, objects)
+            score = score + 1
+            score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+            mainSurface.blit(score_text, (10, 10))  
+
             highest_y = min(obj.rect.y for obj in objects if isinstance(obj, Platform))
             for obj in objects:
                 if isinstance(obj, Platform):
                     obj.moving(surfaceSize) 
                     obj.render(mainSurface)    
-                    if obj.rect.y > 1400:
+                    if obj.rect.y > 1400 and not obj.first:
                         Platform.respawn(obj, surfaceSize, 175, highest_y) 
-                        if random.random() < 0.25:
-                            print("trying to spawn a new enemy")
-                        #    new_enemy = enemy.respawn(obj, surfaceSize, 175, highest_y)
-                        #    if new_enemy is not None:
-                       #         active_entities.append(new_enemy)
             for obj in objects:
                 obj.render(mainSurface)
                 if obj.type == "breaking" and obj.timer != 0:
                     print(obj.timer)
                     obj.timer -= delta_time
-                    if obj.timer <= 0:
+                    if obj.timer <= 0 and not obj.first:
                         Platform.respawn(obj, surfaceSize, 175, highest_y)
             player.render(mainSurface)
+
+            if obj.first:  # Check if the platform is the first one
+                print(f"First platform position: x={obj.rect.x}, y={obj.rect.y}")
 
             #-----------------------------Drawing Everything-------------------------------------#
             # We draw everything from scratch on each frame.
@@ -331,24 +324,68 @@ def main():
             clock.tick(60)
             
         if gamestate == 2:
-            pygame.quit() 
+            mainSurface.fill((255, 80, 10))
+            pygame.display.flip()
             print("dead")
+            ev = pygame.event.poll()    # Look for any event
+            if ev.type == pygame.QUIT:  # Window close button clicked?
+                break
+            if ev.type == pygame.KEYDOWN:
+                if ev.key == pygame.K_ESCAPE:
+                    break
             #For now it just kills it, yana do death screen. 
+        if gamestate == 4:
+            break
     pygame.quit()     # Once we leave the loop, close the window.
 
+
+
+
 def checkBullet(self,bullet,player,enemylist):
+    #Checks if either a bullet comes into contact with the player or if an enemy comes into contact with a bullet
+    #@param1: self -> The container of the enemy
+    #@param2: bullet -> the list of bullets actively on screen
+    #@param3: player -> the player
+    #@param4: enemylist -> The list of entities actively on screen
     if self.rect.colliderect(player.rect):
         player.dead = True
     for bul in bullet:
         if self.rect.colliderect(bul.rect):
             enemylist.remove(self)
-def render(object, screen):
+
+def respawn(screen_width, vertical_gap, highest_y,activeEntities):
+        #enemy2 = enemy(200,300,50,75,100,spritePath = "images/enemy.png",enemy_type="spinning")
+        movement_types = ["moving", "spinning","following"]
+        probabilities = [0.7, 0.2,0.1]
+        typez = random.choices(movement_types, probabilities)[0]
+        xpos = random.randint(0, screen_width)
+        ypos = highest_y - vertical_gap
+        wid = 50
+        hei = 70
+        mDist = 100
+        en = enemy(xpos,ypos,wid,hei,mDist,spritePath = "images/enemy.png",enemy_type = typez)
+        activeEntities.append(en)
+        print(f"spawning enemy of type {typez}")
+
+
+def render(object, screen):#
+    #Renders an object onto the screen
+    #@param object: the object to be rendered
+    #@param screen: the screen the object is rendered on
+    #@Return none
     if object.sprite:
         screen.blit(object.sprite, (object.rect.x, object.rect.y))
     else:
         pygame.draw.rect(screen, (255, 0, 0), object.rect)  # Placeholder red rectangle
 
+
+
 def handle_collisions(self, objects):
+
+    #Handles the collision logic between two objects
+    #@param self: the first object (typically the player)
+    #@param objects: the list of all objects or the list of entities actively on screen
+
     for obj in objects:
 
         if self.rect.colliderect(obj.rect):
