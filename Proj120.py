@@ -58,7 +58,7 @@ class moving_entity():
             pygame.draw.rect(screen, (0, 255, 0), self.rect)  # default to generating a green rectangle if there is no existing sprite
 
 class enemy():
-    '''
+    ''' 
     
     
     '''
@@ -271,7 +271,7 @@ def end_screen(screen, image, font1, font2, score):
     end_text = font1.render((f'You died! Your score was {score}'), True, (255,255,255))
     screen.blit(end_text, (100, 100))
     again_esc_text = font2.render('Press space to play again, or escape to close', True, (255,255,255))
-    screen.blit(again_esc_text, (170, 300))
+    screen.blit(again_esc_text, (110, 300))
 
 def main():
     #-----------------------------Setup------------------------------------------------------#
@@ -347,7 +347,7 @@ def main():
             #List of active entities that get updated each frame
             activeEntities = [heightEntity]
             bullets_group = pygame.sprite.Group()
-            player = moving_entity(300,405,65,100,290,0.85,"images/player.png")
+            player = moving_entity(300,350,65,100,290,0.85,"images/player.png")
             player.velocity.y = 0
             while gamestate == 1:
 
