@@ -425,6 +425,7 @@ def main():
                 clock.tick(60)
             
         if gamestate == 2:
+            player.velocity.y = 0
             mainSurface.fill((255, 20, 10))
             end_screen(mainSurface, bg_home, die_font, again_font, score)
             ev = pygame.event.poll()    # Look for any event
