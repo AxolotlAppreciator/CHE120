@@ -11,10 +11,10 @@ import os
 import os.path
 
 # add background music
-mixer.init() 
-mixer.music.load("audio/song.mp3") 
-mixer.music.set_volume(0.7) 
-mixer.music.play(-1) 
+# mixer.init() 
+# mixer.music.load("audio/song.mp3") 
+# mixer.music.set_volume(0.7) 
+# mixer.music.play(-1) 
 
 # Instantiate a new player entity
 class moving_entity():
@@ -260,9 +260,13 @@ def draw_main_menu(screen, image, font1, font2):
     screen.blit(start_button, start_button_rect)
 
     instructions1 = font2.render('press start or', True, (220, 220, 220))
-    screen.blit(instructions1, (175, 435))
+    screen.blit(instructions1, (175, 405))
     instructions1 = font2.render('any key to play', True, (220, 220, 220))
-    screen.blit(instructions1, (175, 470))
+    screen.blit(instructions1, (175, 430))
+    instructions2 = font2.render('press m to mute song, e to unmute', True, (220, 220, 220))
+    screen.blit(instructions2, (45, 475))
+    instructions3 = font2.render('reload for changes', True, (220, 220, 220))
+    screen.blit(instructions3, (145, 520))
     pygame.display.flip()
     return start_button_rect
 
@@ -289,9 +293,6 @@ def main():
     clouds = pygame.transform.scale(clouds, (surfaceSize, surfaceSize))
     clock = pygame.time.Clock()
     pygame.display.set_caption("Chill Jump")
-    grass = pygame.image.load('images/grassplatform.png')
-    breaking = pygame.image.load('images/breaking.png')
-    moving = pygame.image.load('images/moving.png')
     music = 1
     path = './music.txt'
     checkFile = os.path.isfile(path)
@@ -307,10 +308,23 @@ def main():
     #-----------------------------Main Program Loop---------------------------------------------#
     while True:
 #         Music Control
-        if music == 1:
-            filew = open('music.txt', 'w')
-            filew.write(f'{music}')
-            filew.close()
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_m]:
+            music = 0
+            if music == 0:
+                filew = open('music.txt', 'w')
+                filew.write(f'{music}')
+                filew.close()
+        if keys[pygame.K_e]:
+            music = 1
+            if music == 1:
+                filew = open('music.txt', 'w')
+                filew.write(f'{music}')
+                filew.close()
+        # if music == 1:
+        #     filew = open('music.txt', 'w')
+        #     filew.write(f'{music}')
+        #     filew.close()
 #         Music
         if gamestate == 0:
             if checkFile == True:
