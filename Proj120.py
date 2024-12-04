@@ -197,9 +197,13 @@ class Platform():
         if self.type == "regular":
             self.sprite = "images/grassplatform.png"
         elif self.type == "breaking":
-            self.type = "images/breaking.png"
+            self.sprite = "images/breaking.png"
         elif self.type == "moving":
             self.sprite = "images/moving.png"
+        
+        if self.sprite: 
+            self.sprite = pygame.image.load(self.sprite).convert_alpha()
+            self.sprite = pygame.transform.scale(self.sprite, (100, 20))
 
     def generate_platforms(objects, num_platforms, screen_width, screen_height):
         platform_width = 100
