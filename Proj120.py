@@ -334,7 +334,7 @@ def main():
 
         #-----------------------------Program Logic---------------------------------------------#
         # Update your game objects and data structures here... if (rectPos[1] <= pipePos1[1])
-    
+
         if gamestate == 1:
             heightEntity = enemy(0,0,0,0,0,0,"images/player.png")
             #List of all active objects on the screen
@@ -342,6 +342,7 @@ def main():
             objects = []
             first_platform = Platform(300, 400, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
             objects.append(first_platform)
+            
             Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
             
             #List of active entities that get updated each frame
@@ -425,6 +426,7 @@ def main():
                 clock.tick(60)
             
         if gamestate == 2:
+            player.velocity.y = 0
             mainSurface.fill((255, 20, 10))
             end_screen(mainSurface, bg_home, die_font, again_font, score)
             ev = pygame.event.poll()    # Look for any event
@@ -436,6 +438,8 @@ def main():
                 elif ev.key == pygame.K_SPACE:
                     gamestate = 1
                     score = 0
+                    
+                    
             pygame.display.flip()
         if gamestate == 4:
             break
