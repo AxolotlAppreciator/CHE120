@@ -394,7 +394,7 @@ def main():
                             if random.random() < 0.25 + score / 10000:
                                 print("trying to spawn a new enemy")
                                 respawn(surfaceSize, 175, highest_y,activeEntities)
-                            if score > 5000: 
+                            if score > 12500: 
                                 respawn(surfaceSize, 175, highest_y, activeEntities)
 
                 for obj in objects:
