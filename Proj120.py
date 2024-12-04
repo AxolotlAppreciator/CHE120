@@ -179,6 +179,7 @@ class Platform():
     def render(self, screen):
         if self.sprite and self.active:
             screen.blit(self.sprite, (self.rect.x, self.rect.y))
+
         else:
             colour = self.get_platform_colour() if self.active else (128, 128, 128) # grey = inactive
             pygame.draw.rect(screen, colour, self.rect, border_radius=10)
@@ -200,7 +201,7 @@ class Platform():
         platform_types = ["regular", 'breaking', 'moving']
         probabilities = [0.7, 0.2, 0.1]
         vertical_gap = 175
-        y_position = 400
+        y_position = 275
         
         for _ in range(num_platforms):
             x = random.randint(0, screen_width - platform_width)
@@ -261,6 +262,7 @@ def end_screen(screen, image, font1, font2, score):
     screen.blit(end_text, (100, 100))
     again_esc_text = font2.render('Press space to play again, or escape to close', True, (255,255,255))
     screen.blit(again_esc_text, (170, 300))
+
 def main():
     #-----------------------------Setup------------------------------------------------------#
     """ Set up the game and run the main game loop """
@@ -326,16 +328,16 @@ def main():
         if gamestate == 1:
             heightEntity = enemy(0,0,0,0,0,0,"images/player.png")
             #List of all active objects on the screen
-            first_platform = Platform(300, 575, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
+            first_platform = Platform(300, 420, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
             objects = []
-            first_platform = Platform(300, 575, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
+            first_platform = Platform(300, 420, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
             objects.append(first_platform)
             Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
             
             #List of active entities that get updated each frame
             activeEntities = [heightEntity]
             bullets_group = pygame.sprite.Group()
-            player = moving_entity(300,305,65,100,290,0.85,"images/player.png")
+            player = moving_entity(300,405,65,100,290,0.85,"images/player.png")
             player.velocity.y = 0
             while gamestate == 1:
 
@@ -382,8 +384,8 @@ def main():
                             if random.random() < 0.25 + score / 10000:
                                 print("trying to spawn a new enemy")
                                 respawn(surfaceSize, 175, highest_y,activeEntities)
-                            if score > 5000:
-                                respawn(surfaceSize, 175, highest_y,activeEntities)
+                            if score > 5000: 
+                                respawn(surfaceSize, 175, highest_y, activeEntities)
 
                 for obj in objects:
                     obj.render(mainSurface)
