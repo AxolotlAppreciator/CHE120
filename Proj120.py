@@ -194,6 +194,13 @@ class Platform():
         self.timer = 0
         vertical_gap = 175
 
+        if self.type == "regular":
+            self.sprite = "images/grassplatform.png"
+        elif self.type == "breaking":
+            self.type = "images/breaking.png"
+        elif self.type == "moving":
+            self.sprite = "images/moving.png"
+
     def generate_platforms(objects, num_platforms, screen_width, screen_height):
         platform_width = 100
         platform_height = 20
