@@ -26,9 +26,9 @@ class moving_entity():
     '''     
     def __init__(self,x, y, width, height, max_speed, deceleration_rate, spritePath=None):
         self.rect = pygame.Rect(x,y,width,height) # the entity's rectangle
-        self.velocity = pygame.Vector2(0,0) # the current velocity 
-        self.acceleration = pygame.Vector2(0,0) # the current acceleration
-        self.deceleration_rate = deceleration_rate # the deceleration rate for horizontal movement
+        self.velocity = pygame.Vector2(0,0) # the current velocity for the y direction
+        self.acceleration = pygame.Vector2(0,0) # the current acceleration for the y direction
+        self.deceleration_rate = deceleration_rate # the deceleration rate for the x direction
         self.sprite = None # the entity sprite
         self.grounded = False # whether the entity is grounded
         self.accelerating = False # whether the entity is accelerating
@@ -200,8 +200,8 @@ class Platform():
         platform_height = 20
         platform_types = ["regular", 'breaking', 'moving']
         probabilities = [0.7, 0.2, 0.1]
-        vertical_gap = 175
-        y_position = 275
+        vertical_gap = 150
+        y_position = 300
         
         for _ in range(num_platforms):
             x = random.randint(0, screen_width - platform_width)
@@ -328,9 +328,9 @@ def main():
         if gamestate == 1:
             heightEntity = enemy(0,0,0,0,0,0,"images/player.png")
             #List of all active objects on the screen
-            first_platform = Platform(300, 420, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
+            first_platform = Platform(300, 400, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
             objects = []
-            first_platform = Platform(300, 420, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
+            first_platform = Platform(300, 400, 100, 20, "regular")  # "regular", spritePath = None, speed = 0, first=True
             objects.append(first_platform)
             Platform.generate_platforms(objects, 10, surfaceSize, surfaceSize)
             
