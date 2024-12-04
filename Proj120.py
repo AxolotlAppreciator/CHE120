@@ -83,9 +83,9 @@ class enemy():
             self.sprite = "images/enemyChasing.png"
 
         # If there's a sprite path, load the sprite
-        if spritePath:
-            self.sprite = pygame.image.load(spritePath).convert_alpha()
-            self.sprite = pygame.transform.scale(self.sprite,(width+40,height))
+        if self.sprite:
+            self.sprite = pygame.image.load(self.sprite).convert_alpha()
+            self.sprite = pygame.transform.scale(self.sprite,(width+10,height))
         print("enemyInitialized")
 
     def movementBehaviour(self,originalX,maxDist,delta_time,player):
@@ -127,21 +127,20 @@ class Platform():
         self.timer = 0 # timer for breaking platforms
         self.active = True # breaking platforms will deactivate after breaking
         self.first = first
+        self.sprite = None
         print(f"new platform of type {self.type}")
         # 
         if platform_type == "regular":
-            spritePath = "images/grassplatform.png"
+            self.sprite = "images/grassplatform.png"
         elif platform_type == "breaking":
-            spritePath = "images/breaking.png"
+            self.sprite = "images/breaking.png"
         elif platform_type == "moving":
-            spritePath = "images/moving.png"
+            self.sprite = "images/moving.png"
 
         # if a spritePath exists, it will load it
-        if spritePath: 
-            self.sprite = pygame.image.load(spritePath).convert_alpha()
+        if self.sprite: 
+            self.sprite = pygame.image.load(self.sprite).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite, (width, height))
-        else:
-            self.sprite = None
 
     def get_platform_colour(self):
         if self.type == "regular":
