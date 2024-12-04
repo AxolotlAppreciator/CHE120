@@ -361,7 +361,7 @@ def main():
             #List of active entities that get updated each frame
             activeEntities = [heightEntity]
             bullets_group = pygame.sprite.Group()
-            player = moving_entity(300,405,65,100,290,0.85,"images/player.png")
+            player = moving_entity(300,350,65,100,290,0.85,"images/player.png")
             player.velocity.y = 0
             while gamestate == 1:
 
